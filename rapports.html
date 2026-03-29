@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapports — Feuilles de Temps</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a;
+    --accent: #f0b429; --accent2: #e85d4a; --accent3: #60a5fa;
+    --text: #e8eaf0; --muted: #6b7280; --border: #2d3148;
+    --success: #34d399; --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Mono', monospace; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 40px; }
+
+  header { background: var(--surface); border-bottom: 2px solid var(--accent3); padding: 14px 18px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
+  .logo { width: 34px; height: 34px; background: var(--accent3); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; color: #0f1117; font-size: 14px; flex-shrink: 0; }
+  header h1 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+  header span { font-size: 11px; color: var(--muted); display: block; margin-top: 1px; }
+
+  .container { max-width: 700px; margin: 0 auto; padding: 16px 12px; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 16px; background: var(--surface); border-radius: var(--radius); padding: 5px; }
+  .tab { flex: 1; padding: 9px; border: none; border-radius: 8px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); background: transparent; transition: all 0.2s; text-align: center; }
+  .tab.active { background: var(--accent3); color: #0f1117; font-weight: 500; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; margin-bottom: 12px; }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: var(--accent3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .card-title::before { content: ''; display: inline-block; width: 3px; height: 13px; background: var(--accent3); border-radius: 2px; }
+
+  label { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 5px; margin-top: 11px; }
+  label:first-child { margin-top: 0; }
+  input, select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 14px; padding: 10px 12px; outline: none; transition: border-color 0.2s; appearance: none; }
+  input[type="date"] { appearance: none; color-scheme: dark; }
+  input:focus, select:focus { border-color: var(--accent3); }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+  .filters-row { display: flex; gap: 10px; }
+  .filters-row > div { flex: 1; }
+
+  /* Raccourcis période */
+  .periode-shortcuts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .p-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; padding: 5px 11px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .p-btn:hover { border-color: var(--accent3); color: var(--accent3); }
+
+  .btn-rapport { width: 100%; padding: 13px; background: var(--accent3); color: #0f1117; border: none; border-radius: var(--radius); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 14px; text-transform: uppercase; transition: background 0.2s; }
+  .btn-rapport:hover { background: #93c5fd; }
+  .btn-rapport:disabled { background: var(--muted); cursor: not-allowed; }
+
+  /* STATS */
+  .stats-row { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .stat-box { flex: 1; min-width: 100px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; }
+  .stat-box .val { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--accent); line-height: 1; }
+  .stat-box .lbl { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* TABLES */
+  .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: var(--surface2); }
+  th { padding: 10px 13px; text-align: left; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; font-weight: 500; white-space: nowrap; }
+  td { padding: 10px 13px; border-top: 1px solid var(--border); vertical-align: middle; }
+  tr:hover td { background: var(--surface2); }
+  .heures-val { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent); }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 50px; font-size: 11px; }
+  .badge-blue { background: rgba(96,165,250,0.15); color: var(--accent3); }
+  .badge-yellow { background: rgba(240,180,41,0.15); color: var(--accent); }
+
+  /* SUIVI AFFAIRE */
+  .affaire-selector { margin-bottom: 14px; }
+  .affaire-recap-header { background: var(--surface2); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .affaire-recap-info .code { font-size: 11px; color: var(--accent); margin-bottom: 4px; }
+  .affaire-recap-info .lib { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; }
+  .affaire-recap-total { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 32px; color: var(--accent); }
+
+  /* Par nom dans suivi affaire */
+  .nom-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+  .nom-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--surface2); cursor: pointer; }
+  .nom-header:hover { background: #2a2f45; }
+  .nom-label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--accent3); }
+  .nom-total { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--accent); }
+  .nom-detail { display: none; }
+  .nom-detail.open { display: block; }
+  .detail-line { display: flex; gap: 10px; padding: 8px 16px; border-top: 1px solid var(--border); font-size: 12px; align-items: center; flex-wrap: wrap; }
+  .detail-date { color: var(--muted); min-width: 85px; }
+  .detail-type { color: var(--text); flex: 1; }
+  .detail-h { color: var(--accent); font-family: 'Syne', sans-serif; font-weight: 700; white-space: nowrap; }
+
+  /* GESTION */
+  .affaire-gestion-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border-radius: 8px; padding: 10px 13px; margin-bottom: 6px; }
+  .affaire-gestion-code { color: var(--accent); font-size: 11px; flex-shrink: 0; min-width: 60px; }
+  .affaire-gestion-lib { flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .toggle-statut { display: flex; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0; }
+  .toggle-track { width: 36px; height: 20px; background: var(--border); border-radius: 50px; position: relative; transition: background 0.2s; }
+  .toggle-track.on { background: var(--success); }
+  .toggle-thumb { width: 14px; height: 14px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: left 0.2s; }
+  .toggle-track.on .toggle-thumb { left: 19px; }
+  .toggle-label { font-size: 11px; color: var(--muted); min-width: 40px; }
+
+  .list-items-simple { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; max-height: 200px; overflow-y: auto; }
+  .list-item-simple { background: var(--surface2); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+  .add-row { display: flex; gap: 6px; }
+  .add-row input { flex: 1; }
+  .btn-add { background: var(--accent3); border: none; border-radius: 8px; color: #0f1117; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; width: 42px; height: 42px; cursor: pointer; flex-shrink: 0; }
+  .btn-add:hover { background: #93c5fd; }
+
+  .btn-print { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 12px; padding: 8px 13px; cursor: pointer; margin-bottom: 14px; }
+  .btn-print:hover { border-color: var(--accent3); color: var(--accent3); }
+
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
+  .empty-state .icon { font-size: 32px; margin-bottom: 10px; }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--success); color: #0f1117; padding: 11px 20px; border-radius: 50px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; opacity: 0; transition: opacity 0.25s, transform 0.25s; z-index: 40; white-space: nowrap; pointer-events: none; }
+  .toast.error { background: var(--accent2); color: white; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .semaine-bloc { border-top: 1px solid var(--border); }
+  .semaine-header { display: flex; justify-content: space-between; align-items: center; padding: 9px 16px; background: rgba(96,165,250,0.06); font-size: 12px; color: var(--accent3); font-family: 'Syne', sans-serif; font-weight: 700; }
+  .jour-bloc { border-top: 1px solid var(--border); }
+  .jour-bloc-header { display: flex; justify-content: space-between; align-items: center; padding: 7px 16px; background: var(--surface); font-size: 12px; }
+  @media print {
+    header, .tabs, .card, .btn-print, .affaire-selector { display: none !important; }
+    body { background: white; color: black; }
+    .nom-detail { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">📊</div>
+  <div>
+    <h1>Rapports</h1>
+    <span>Feuilles de Temps</span>
+  </div>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('paie')">💶 Heures / Paie</button>
+    <button class="tab" onclick="switchTab('affaires')">🏗️ Suivi Affaire</button>
+    <button class="tab" onclick="switchTab('gestion')">⚙️ Gestion</button>
+  </div>
+
+  <!-- ── PAIE ── -->
+  <div class="panel active" id="panel-paie">
+    <div class="card">
+      <div class="card-title">Plage de semaines</div>
+      <div class="filters-row">
+        <div><label>De la semaine</label><select id="sem-debut"></select></div>
+        <div><label>À la semaine</label><select id="sem-fin"></select></div>
+      </div>
+      <button class="btn-rapport" id="btn-paie" onclick="genererPaie()">🔍 Générer le rapport</button>
+    </div>
+    <div id="resultats-paie">
+      <div class="empty-state"><div class="icon">💶</div>Choisissez une plage de semaines</div>
+    </div>
+  </div>
+
+  <!-- ── SUIVI AFFAIRE ── -->
+  <div class="panel" id="panel-affaires">
+    <div class="card affaire-selector">
+      <div class="card-title">Sélectionner une affaire</div>
+      <select id="select-affaire" onchange="genererSuiviAffaire()">
+        <option value="">— Choisir une affaire —</option>
+      </select>
+    </div>
+    <div id="resultats-affaires">
+      <div class="empty-state"><div class="icon">🏗️</div>Choisissez une affaire pour voir son suivi complet</div>
+    </div>
+  </div>
+
+  <!-- ── GESTION ── -->
+  <div class="panel" id="panel-gestion">
+    <div class="card">
+      <div class="card-title">Ajouter une affaire</div>
+      <div class="add-row">
+        <input type="text" id="new-affaire-code" placeholder="Code" style="max-width:100px">
+        <input type="text" id="new-affaire-lib" placeholder="Libellé du chantier">
+        <button class="btn-add" onclick="addAffaire()">+</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Types de travaux</div>
+      <div class="list-items-simple" id="list-types"></div>
+      <div class="add-row">
+        <input type="text" id="new-type" placeholder="Ex: Carrelage">
+        <button class="btn-add" onclick="addType()">+</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Noms</div>
+      <div class="list-items-simple" id="list-ouvriers"></div>
+      <div class="add-row">
+        <input type="text" id="new-ouvrier" placeholder="Prénom Nom">
+        <button class="btn-add" onclick="addOuvrier()">+</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Statut des affaires</div>
+      <div id="gestion-affaires-list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbwdh6MIOMSAIHpjNeB2gRWUOq-gb9RAHm25Dm5MlAASQ2gyaa7PhU5e-H0276VmiD6X/exec";
+let listes = { ouvriers:[], affaires:[], types:[], saisies:[] };
+let currentTab = 'paie';
+
+function ft(url,ms=15000){return Promise.race([fetch(url),new Promise((_,r)=>setTimeout(()=>r(new Error('t')),ms))]);}
+function enc(v){return encodeURIComponent(v||'');}
+
+// ── INIT ────────────────────────────────────────────────────────
+async function chargerListes(){
+  try{
+    const r=await ft(API+"?action=getListes");
+    const d=await r.json();
+    listes=d;
+    remplirSelectAffaire();
+    renderGestion();
+  }catch(e){showToast("Erreur de connexion",true);}
+}
+
+function ds(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function fmtDate(str){return new Date(str+'T00:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});}
+
+function getLundi(offset){
+  const t=new Date(),dow=t.getDay()||7,l=new Date(t);
+  l.setDate(t.getDate()-dow+1+offset*7);l.setHours(0,0,0,0);return l;
+}
+function numSem(d){
+  const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  t.setUTCDate(t.getUTCDate()+4-(t.getUTCDay()||7));
+  return Math.ceil((((t-new Date(Date.UTC(t.getUTCFullYear(),0,1)))/86400000)+1)/7);
+}
+
+function initSemaineSelects(){
+  // Générer les 52 dernières semaines + 4 prochaines
+  const opts=[];
+  for(let i=-51;i<=4;i++){
+    const l=getLundi(i);
+    const s=numSem(l);
+    const label=`S${String(s).padStart(2,'0')} — ${l.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})} ${l.getFullYear()}`;
+    opts.push({val:ds(l),label,i});
+  }
+  ['sem-debut','sem-fin'].forEach(id=>{
+    const sel=document.getElementById(id);
+    sel.innerHTML=opts.map(o=>`<option value="${o.val}">${o.label}</option>`).join('');
+  });
+  // Par défaut : mois courant (semaine -3 à semaine 0)
+  const moisDebut=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+  // Trouver la semaine qui contient le 1er du mois
+  const semDebut=opts.find(o=>new Date(o.val+'T00:00:00')<=moisDebut&&new Date(o.val+'T00:00:00').getTime()+6*86400000*1000>=moisDebut.getTime())||opts[opts.length-5];
+  document.getElementById('sem-debut').value=opts[Math.max(0,opts.length-5)].val;
+  document.getElementById('sem-fin').value=opts[opts.length-2].val;
+}
+
+// ── TABS ────────────────────────────────────────────────────────
+function switchTab(tab){
+  currentTab=tab;
+  const tabs=['paie','affaires','gestion'];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
+  tabs.forEach(p=>document.getElementById(`panel-${p}`).classList.toggle('active',p===tab));
+}
+
+// ── PAIE ────────────────────────────────────────────────────────
+async function genererPaie(){
+  const debut=document.getElementById('sem-debut').value;
+  const fin=document.getElementById('sem-fin').value;
+  if(!debut||!fin){showToast("Choisissez une plage de semaines",true);return;}
+  // fin = lundi de la dernière semaine → on va jusqu'au samedi soir
+  const dFin=new Date(fin+'T00:00:00');dFin.setDate(dFin.getDate()+5);
+
+  const btn=document.getElementById('btn-paie');
+  btn.textContent='⏳ Chargement...';btn.disabled=true;
+  try{
+    const r=await ft(API+"?action=getListes");
+    const d=await r.json();listes=d;
+    afficherPaie(debut,ds(dFin));
+  }catch(e){showToast("Erreur de connexion",true);}
+  btn.textContent='🔍 Générer le rapport';btn.disabled=false;
+}
+
+function getSemaineLabel(dateStr){
+  const d=new Date(dateStr+'T00:00:00');
+  return`S${String(numSem(d)).padStart(2,'0')} — ${d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})} ${d.getFullYear()}`;
+}
+
+function getLundiDeSemaine(dateStr){
+  const d=new Date(dateStr+'T00:00:00');
+  const dow=d.getDay()||7;
+  d.setDate(d.getDate()-dow+1);
+  return ds(d);
+}
+
+function afficherPaie(debut,fin){
+  const div=document.getElementById('resultats-paie');
+  const dDebut=new Date(debut+'T00:00:00');
+  const dFin=new Date(fin+'T23:59:59');
+
+  const saisies=listes.saisies.slice(1).filter(row=>{
+    if(!row[0])return false;
+    const d=new Date(row[0]+'T00:00:00');
+    return d>=dDebut&&d<=dFin;
+  });
+
+  const semDebut=getSemaineLabel(debut);
+  const semFin=getSemaineLabel(fin);
+  const periode=`${semDebut} → ${semFin}`;
+
+  if(!saisies.length){
+    div.innerHTML=`<div class="empty-state"><div class="icon">🔍</div>Aucune saisie pour ${periode}</div>`;
+    return;
+  }
+
+  // Grouper par nom
+  const parNom={};
+  saisies.forEach(row=>{
+    const nom=row[1];
+    if(!parNom[nom])parNom[nom]={heures:0,lignes:[]};
+    parNom[nom].heures+=parseFloat(row[5])||0;
+    parNom[nom].lignes.push(row);
+  });
+  const totalH=Object.values(parNom).reduce((a,b)=>a+b.heures,0);
+
+  let html=`<button class="btn-print" onclick="window.print()">🖨️ Imprimer / PDF</button>
+  <div class="stats-row">
+    <div class="stat-box"><div class="val">${totalH.toFixed(1)}</div><div class="lbl">Heures totales</div></div>
+    <div class="stat-box"><div class="val">${Object.keys(parNom).length}</div><div class="lbl">Personnes</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Récapitulatif — ${periode}</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Nom</th><th>Heures totales</th></tr></thead>
+      <tbody>
+        ${Object.entries(parNom).map(([nom,data])=>`
+          <tr>
+            <td><span class="badge badge-blue">${nom}</span></td>
+            <td><span class="heures-val">${data.heures.toFixed(1)} h</span></td>
+          </tr>`).join('')}
+      </tbody>
+    </table></div>
+  </div>`;
+
+  // Détail par nom → par semaine → par jour
+  const JOURS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  Object.entries(parNom).forEach(([nom,data],ni)=>{
+    // Grouper par semaine
+    const parSemaine={};
+    data.lignes.forEach(row=>{
+      const lundi=getLundiDeSemaine(row[0]);
+      if(!parSemaine[lundi])parSemaine[lundi]={heures:0,parJour:{}};
+      parSemaine[lundi].heures+=parseFloat(row[5])||0;
+      if(!parSemaine[lundi].parJour[row[0]])parSemaine[lundi].parJour[row[0]]=[];
+      parSemaine[lundi].parJour[row[0]].push(row);
+    });
+
+    html+=`<div class="nom-block">
+      <div class="nom-header" onclick="toggleNomPaie(${ni})">
+        <span class="nom-label">${nom}</span>
+        <span class="nom-total">${data.heures.toFixed(1)} h</span>
+      </div>
+      <div class="nom-detail" id="np-${ni}">`;
+
+    Object.entries(parSemaine).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([lundi,semData])=>{
+      const sLabel=getSemaineLabel(lundi);
+      html+=`<div class="semaine-bloc">
+        <div class="semaine-header">
+          <span>${sLabel}</span>
+          <span class="heures-val">${semData.heures.toFixed(1)} h</span>
+        </div>`;
+
+      // Par jour
+      Object.entries(semData.parJour).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([date,lignes])=>{
+        const d=new Date(date+'T00:00:00');
+        const nomJour=JOURS[d.getDay()-1]||'';
+        const totalJour=lignes.reduce((a,r)=>a+(parseFloat(r[5])||0),0);
+        html+=`<div class="jour-bloc">
+          <div class="jour-bloc-header">
+            <span class="detail-date">${nomJour} ${fmtDate(date)}</span>
+            <span class="heures-val">${totalJour.toFixed(1)} h</span>
+          </div>
+          ${lignes.map(row=>`
+            <div class="detail-line" style="padding-left:24px">
+              <span class="detail-type">${row[2]}${row[3]?' — '+row[3]:''} · ${row[4]}</span>
+              <span class="detail-h">${parseFloat(row[5]).toFixed(1)} h</span>
+            </div>`).join('')}
+        </div>`;
+      });
+      html+=`</div>`;
+    });
+
+    html+=`</div></div>`;
+  });
+
+  div.innerHTML=html;
+}
+
+function toggleNomPaie(i){document.getElementById(`np-${i}`)?.classList.toggle('open');}
+
+// ── SUIVI AFFAIRE ───────────────────────────────────────────────
+function remplirSelectAffaire(){
+  const sel=document.getElementById('select-affaire');
+  const val=sel.value;
+  sel.innerHTML='<option value="">— Choisir une affaire —</option>';
+  listes.affaires.slice(1).forEach(a=>{
+    sel.innerHTML+=`<option value="${a[0]}">${a[0]}${a[1]?' — '+a[1]:''}${(a[2]||'Actif')==='Inactif'?' (terminée)':''}</option>`;
+  });
+  if(val)sel.value=val;
+}
+
+function genererSuiviAffaire(){
+  const code=document.getElementById('select-affaire').value;
+  const div=document.getElementById('resultats-affaires');
+  if(!code){div.innerHTML='<div class="empty-state"><div class="icon">🏗️</div>Choisissez une affaire</div>';return;}
+
+  // Toutes les saisies pour cette affaire, sans limite de temps
+  const saisies=listes.saisies.slice(1).filter(row=>row[2]===code);
+  const affaire=listes.affaires.slice(1).find(a=>a[0]===code);
+  const lib=affaire?affaire[1]:'';
+  const statut=affaire?(affaire[2]||'Actif'):'';
+
+  if(!saisies.length){
+    div.innerHTML=`<div class="empty-state"><div class="icon">🔍</div>Aucune saisie pour l'affaire ${code}</div>`;
+    return;
+  }
+
+  const totalH=saisies.reduce((a,r)=>a+(parseFloat(r[5])||0),0);
+  const noms=new Set(saisies.map(r=>r[1]));
+  const dateMin=saisies.map(r=>r[0]).sort()[0];
+  const dateMax=saisies.map(r=>r[0]).sort().reverse()[0];
+
+  // Grouper par nom
+  const parNom={};
+  saisies.forEach(row=>{
+    const nom=row[1];
+    if(!parNom[nom])parNom[nom]={heures:0,lignes:[]};
+    parNom[nom].heures+=parseFloat(row[5])||0;
+    parNom[nom].lignes.push(row);
+  });
+
+  let html=`<button class="btn-print" onclick="window.print()">🖨️ Imprimer / PDF</button>
+  <div class="affaire-recap-header">
+    <div class="affaire-recap-info">
+      <div class="code">${code}${statut==='Inactif'?' — <span style="color:var(--accent2)">Terminée</span>':''}</div>
+      <div class="lib">${lib||'—'}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">${fmtDate(dateMin)} → ${fmtDate(dateMax)}</div>
+    </div>
+    <div class="affaire-recap-total">${totalH.toFixed(1)} h</div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box"><div class="val">${totalH.toFixed(1)}</div><div class="lbl">Heures totales</div></div>
+    <div class="stat-box"><div class="val">${noms.size}</div><div class="lbl">Personnes</div></div>
+    <div class="stat-box"><div class="val">${saisies.length}</div><div class="lbl">Saisies</div></div>
+  </div>`;
+
+  // Récap par nom
+  html+=`<div class="card">
+    <div class="card-title">Heures par personne</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Nom</th><th>Heures</th><th>%</th></tr></thead>
+      <tbody>
+        ${Object.entries(parNom).sort((a,b)=>b[1].heures-a[1].heures).map(([nom,data])=>`
+          <tr>
+            <td><span class="badge badge-blue">${nom}</span></td>
+            <td><span class="heures-val">${data.heures.toFixed(1)} h</span></td>
+            <td style="color:var(--muted)">${Math.round(data.heures/totalH*100)} %</td>
+          </tr>`).join('')}
+      </tbody>
+    </table></div>
+  </div>`;
+
+  // Détail par nom (accordéon)
+  Object.entries(parNom).sort((a,b)=>b[1].heures-a[1].heures).forEach(([nom,data],i)=>{
+    const lignes=data.lignes.sort((a,b)=>new Date(a[0])-new Date(b[0]));
+    html+=`<div class="nom-block">
+      <div class="nom-header" onclick="toggleNom(${i})">
+        <span class="nom-label">${nom}</span>
+        <span class="nom-total">${data.heures.toFixed(1)} h</span>
+      </div>
+      <div class="nom-detail" id="nom-${i}">
+        ${lignes.map(row=>`
+          <div class="detail-line">
+            <span class="detail-date">${fmtDate(row[0])}</span>
+            <span class="detail-type">${row[4]}</span>
+            <span class="detail-h">${parseFloat(row[5]).toFixed(1)} h</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  });
+
+  div.innerHTML=html;
+}
+
+function toggleNom(i){document.getElementById(`nom-${i}`)?.classList.toggle('open');}
+
+// ── GESTION ─────────────────────────────────────────────────────
+function renderGestion(){
+  const list=document.getElementById('gestion-affaires-list');
+  if(!list)return;
+  list.innerHTML=listes.affaires.slice(1).slice().reverse().map(a=>{
+    const actif=(a[2]||'Actif')==='Actif';
+    return`<div class="affaire-gestion-item">
+      <span class="affaire-gestion-code">${a[0]}</span>
+      <span class="affaire-gestion-lib">${a[1]||'—'}</span>
+      <div class="toggle-statut" onclick="toggleStatut('${a[0]}','${actif?'Inactif':'Actif'}',this)">
+        <div class="toggle-track${actif?' on':''}"><div class="toggle-thumb"></div></div>
+        <span class="toggle-label">${actif?'Actif':'Inactif'}</span>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('list-types').innerHTML=listes.types.slice(1).map(r=>`<div class="list-item-simple">${r[0]}</div>`).join('');
+  document.getElementById('list-ouvriers').innerHTML=listes.ouvriers.slice(1).map(r=>`<div class="list-item-simple">${r[1]}</div>`).join('');
+}
+
+async function toggleStatut(code,newStatut,el){
+  try{
+    await ft(`${API}?action=updateStatutAffaire&code=${enc(code)}&statut=${enc(newStatut)}`);
+    const actif=newStatut==='Actif';
+    el.querySelector('.toggle-track').classList.toggle('on',actif);
+    el.querySelector('.toggle-label').textContent=actif?'Actif':'Inactif';
+    const a=listes.affaires.find(a=>a[0]===code);if(a)a[2]=newStatut;
+    el.setAttribute('onclick',`toggleStatut('${code}','${actif?'Inactif':'Actif'}',this)`);
+    remplirSelectAffaire();
+    showToast(actif?'Affaire activée ✔':'Affaire désactivée');
+  }catch(e){showToast("Erreur",true);}
+}
+
+async function addAffaire(){
+  const code=document.getElementById('new-affaire-code').value.trim();
+  const lib=document.getElementById('new-affaire-lib').value.trim();
+  if(!code||!lib){showToast("Code et libellé requis",true);return;}
+  await ft(`${API}?action=addAffaire&code=${enc(code)}&libelle=${enc(lib)}`);
+  document.getElementById('new-affaire-code').value='';
+  document.getElementById('new-affaire-lib').value='';
+  await initSemaineSelects();
+chargerListes();showToast("Affaire ajoutée !");
+}
+async function addType(){
+  const type=document.getElementById('new-type').value.trim();
+  if(!type){showToast("Type requis",true);return;}
+  await ft(`${API}?action=addType&type=${enc(type)}`);
+  document.getElementById('new-type').value='';
+  await initSemaineSelects();
+chargerListes();showToast("Type ajouté !");
+}
+async function addOuvrier(){
+  const nom=document.getElementById('new-ouvrier').value.trim();
+  if(!nom){showToast("Nom requis",true);return;}
+  await ft(`${API}?action=addOuvrier&nom=${enc(nom)}`);
+  document.getElementById('new-ouvrier').value='';
+  await initSemaineSelects();
+chargerListes();showToast("Nom ajouté !");
+}
+
+function showToast(msg,error=false){
+  const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(error?' error':'');
+  setTimeout(()=>t.classList.add('show'),10);setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+initSemaineSelects();
+chargerListes();
+</script>
+</body>
+</html>
