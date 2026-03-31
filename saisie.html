@@ -19,37 +19,30 @@
   body { background:var(--bg); color:var(--text); line-height:1.6; padding-bottom:100px; min-height:100vh; }
   .header { background:var(--bg2); padding:1rem; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; }
   .header h1 { font-size:1.1rem; font-weight:700; background:linear-gradient(135deg, #fff 0%, #8b90a8 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-  
   .container { max-width:600px; margin:0 auto; padding:1rem; }
   .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.25rem; margin-bottom:1rem; box-shadow:var(--shadow-sm); }
-  
   .form-group { margin-bottom:1rem; }
   .form-group label { display:block; font-size:0.8rem; font-weight:600; color:var(--text2); margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.5px; }
   input, select { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:0.75rem; color:var(--text); font-size:0.95rem; outline:none; transition:all 0.2s; }
   input:focus, select:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accentbg); }
-
   .btn { display:inline-flex; align-items:center; justify-content:center; padding:0.75rem 1.5rem; border-radius:10px; font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.2s; border:none; gap:0.5rem; width:100%; }
   .btn-primary { background:var(--accent); color:white; }
   .btn-primary:active { transform:scale(0.98); }
   .btn-sync { background:var(--accentbg); color:var(--accent); width:auto; padding:0.5rem 1rem; font-size:0.8rem; }
   .btn-sync.syncing { opacity:0.5; cursor:wait; }
-
   .saisie-item { background:var(--card2); padding:1rem; border-radius:12px; margin-bottom:0.75rem; border-left:4px solid var(--accent); position:relative; }
   .saisie-item.pending { border-left-color:var(--orange); }
   .saisie-info { display:grid; grid-template-columns:1fr auto; gap:0.5rem; margin-bottom:0.5rem; }
   .saisie-main { font-weight:600; font-size:0.95rem; }
   .saisie-sub { font-size:0.8rem; color:var(--text2); }
   .saisie-h { font-weight:700; color:var(--accent); background:var(--accentbg); padding:2px 8px; border-radius:6px; font-size:0.85rem; }
-  
   .tabs { position:fixed; bottom:0; left:0; right:0; background:var(--bg2); border-top:1px solid var(--border); display:flex; padding:0.5rem; z-index:1000; }
   .tab { flex:1; display:flex; flex-direction:column; align-items:center; padding:0.5rem; color:var(--text3); font-size:0.7rem; font-weight:600; text-decoration:none; cursor:pointer; }
   .tab.active { color:var(--accent); }
-  
   #panel-gestion { display:none; }
   #panel-gestion.active { display:block; }
   #panel-saisie { display:none; }
   #panel-saisie.active { display:block; }
-
   .toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); padding:0.75rem 1.5rem; border-radius:50px; font-size:0.85rem; font-weight:600; z-index:2000; display:none; animation:slideDown 0.3s ease; }
   .toast.success { background:var(--success); color:#004d33; }
   .toast.error { background:var(--red); color:white; }
@@ -59,7 +52,7 @@
 <body>
 
 <div class="header">
-  <h1>FEUILLES DE TEMPS</h1>
+  <h1>Saisie Heures</h1>
   <button id="btn-sync" class="btn btn-sync" onclick="synchroniser()">Synchroniser (0)</button>
 </div>
 
@@ -75,10 +68,9 @@
       <select id="affaire-select" size="4" style="margin-top:0.5rem;"></select>
     </div>
     <div class="form-group"><label>Type de travail</label><select id="type-select"></select></div>
-    <div class="form-group"><label>Heures</label><input type="text" id="heures-input" placeholder="Ex: 8.5 ou 8,5"></div>
+    <div class="form-group"><label>Heures</label><input type="text" id="heures-input" placeholder="0.0"></div>
     <button class="btn btn-primary" onclick="ajouterLocal()">Ajouter la saisie</button>
   </div>
-
   <div id="saisies-liste"></div>
 </div>
 
@@ -107,7 +99,7 @@
 </div>
 
 <script>
-const API = "TON_URL_WEB_APP_ICI"; // <--- REMPLACER PAR TON URL DEPLOYEE
+const API = "TON_URL_ICI"; // Remplace par ton URL de déploiement Google
 
 let dataStore = { ouvriers:[], affaires:[], types:[], saisies:[] };
 let pendingOps = JSON.parse(localStorage.getItem('pendingOps') || '[]');
@@ -134,19 +126,15 @@ async function chargerListes(){
 function renderSelects(){
   const o = document.getElementById('ouvrier-select');
   o.innerHTML = dataStore.ouvriers.slice(1).map(x=>`<option value="${x[1]}">${x[1]}</option>`).join('');
-  
   const t = document.getElementById('type-select');
   t.innerHTML = dataStore.types.slice(1).map(x=>`<option value="${x[0]}">${x[0]}</option>`).join('');
-  
   filtrerAffaires();
 }
 
 function filtrerAffaires(){
   const search = document.getElementById('affaire-search').value.toLowerCase();
   const s = document.getElementById('affaire-select');
-  const filtered = dataStore.affaires.slice(1).filter(a => 
-    a[2] === "Actif" && (a[0].toString().toLowerCase().includes(search) || a[1].toLowerCase().includes(search))
-  );
+  const filtered = dataStore.affaires.slice(1).filter(a => a[2] === "Actif" && (a[0].toString().toLowerCase().includes(search) || a[1].toLowerCase().includes(search)));
   s.innerHTML = filtered.map(a => `<option value="${a[0]}|${a[1]}">${a[0]} - ${a[1]}</option>`).join('');
 }
 
@@ -155,143 +143,71 @@ function ajouterLocal(){
   const ouvrier = document.getElementById('ouvrier-select').value;
   const affRaw = document.getElementById('affaire-select').value;
   const type = document.getElementById('type-select').value;
-  // GESTION VIRGULE ICI
-  const hInput = document.getElementById('heures-input').value.replace(',', '.');
-  const h = parseFloat(hInput);
+  // --- CORRECTIF VIRGULE ICI ---
+  const h = parseFloat(document.getElementById('heures-input').value.replace(',', '.'));
 
   if(!date || !affRaw || isNaN(h)){ showToast("Champs invalides","error"); return; }
-  
   const [code, libelle] = affRaw.split('|');
   const op = { type:'add', date, ouvrier, code_affaire:code, libelle_affaire:libelle, type_travail:type, h, id:Date.now() };
-  
   pendingOps.push(op);
   sauverOps();
   renderSaisies();
   document.getElementById('heures-input').value = '';
-  showToast("Ajouté au panier");
 }
 
 function renderSaisies(){
   const container = document.getElementById('saisies-liste');
   let html = '<h3>Récapitulatif</h3><br>';
-  
-  // Saisies en attente (Local)
   pendingOps.forEach(op => {
-    html += `
-      <div class="saisie-item pending">
-        <div class="saisie-info">
-          <div>
-            <div class="saisie-main">${op.code_affaire} - ${op.libelle_affaire}</div>
-            <div class="saisie-sub">${op.ouvrier} • ${op.date} • ${op.type_travail}</div>
-          </div>
-          <div class="saisie-h">${op.h}h</div>
-        </div>
-        <button onclick="supprOp(${op.id})" style="color:var(--red); background:none; border:none; font-size:0.7rem; cursor:pointer;">Annuler</button>
-      </div>`;
+    html += `<div class="saisie-item pending"><div class="saisie-info"><div><div class="saisie-main">${op.code_affaire} - ${op.libelle_affaire}</div><div class="saisie-sub">${op.ouvrier} • ${op.date}</div></div><div class="saisie-h">${op.h}h</div></div><button onclick="supprOp(${op.id})" style="color:var(--red); background:none; border:none; font-size:0.7rem;">Annuler</button></div>`;
   });
-
-  // Saisies déjà sur Google (Serveur)
   dataStore.saisies.slice(1).reverse().forEach((s, i) => {
     const realIdx = dataStore.saisies.length - 2 - i;
-    html += `
-      <div class="saisie-item">
-        <div class="saisie-info">
-          <div>
-            <div class="saisie-main">${s[2]} - ${s[3]}</div>
-            <div class="saisie-sub">${s[1]} • ${s[0]} • ${s[4]}</div>
-          </div>
-          <div class="saisie-h">${s[5]}h</div>
-        </div>
-        <button onclick="supprSaisieServer(${realIdx})" style="color:var(--red); background:none; border:none; font-size:0.7rem; cursor:pointer;">Supprimer</button>
-      </div>`;
+    html += `<div class="saisie-item"><div class="saisie-info"><div><div class="saisie-main">${s[2]} - ${s[3]}</div><div class="saisie-sub">${s[1]} • ${s[0]}</div></div><div class="saisie-h">${s[5]}h</div></div><button onclick="supprSaisieServer(${realIdx})" style="color:var(--red); background:none; border:none; font-size:0.7rem;">Supprimer</button></div>`;
   });
-  
   container.innerHTML = html;
 }
 
-function supprOp(id){
-  pendingOps = pendingOps.filter(o => o.id !== id);
-  sauverOps();
-  renderSaisies();
-}
-
-function supprSaisieServer(idx){
-  if(confirm("Supprimer cette ligne sur le serveur ?")){
-    pendingOps.push({ type:'delete', idx: idx });
-    sauverOps();
-    renderSaisies();
-  }
-}
-
-function sauverOps(){
-  localStorage.setItem('pendingOps', JSON.stringify(pendingOps));
-  majBtnSync();
-}
-
-function majBtnSync(){
-  const btn = document.getElementById('btn-sync');
-  btn.textContent = syncing ? "Synchronisation..." : `Synchroniser (${pendingOps.length})`;
-  btn.className = syncing ? "btn btn-sync syncing" : "btn btn-sync";
-}
+function supprOp(id){ pendingOps = pendingOps.filter(o => o.id !== id); sauverOps(); renderSaisies(); }
+function supprSaisieServer(idx){ if(confirm("Supprimer ?")){ pendingOps.push({ type:'delete', idx: idx }); sauverOps(); renderSaisies(); } }
+function sauverOps(){ localStorage.setItem('pendingOps', JSON.stringify(pendingOps)); majBtnSync(); }
+function majBtnSync(){ const btn = document.getElementById('btn-sync'); btn.textContent = `Synchroniser (${pendingOps.length})`; }
 
 async function synchroniser(){
-  if(syncing) return;
-  syncing = true;
-  majBtnSync();
-
-  if(pendingOps.length === 0){
-    await chargerListes();
-    syncing = false;
-    majBtnSync();
-    showToast("Déjà à jour");
-    return;
-  }
-
-  // TRI CRITIQUE : Supprimer d'abord les index les plus élevés pour ne pas décaler les lignes
+  if(syncing) return; syncing = true;
+  // --- CORRECTIF TRI DÉCROISSANT POUR LA CONCURRENCE ---
   const deletes = pendingOps.filter(o => o.type === 'delete').sort((a,b) => b.idx - a.idx);
   const adds = pendingOps.filter(o => o.type === 'add');
 
   try {
-    // 1. Suppressions UNE PAR UNE
-    for(const op of deletes){
-      await ft(`${API}?action=deleteSaisie&index=${op.idx}`);
-    }
-    // 2. Ajouts
-    for(const op of adds){
-      await ft(`${API}?action=saisie&date=${enc(op.date)}&ouvrier=${enc(op.ouvrier)}&code_affaire=${enc(op.code_affaire)}&libelle_affaire=${enc(op.libelle_affaire)}&type_travail=${enc(op.type_travail)}&heures=${op.h}`);
-    }
-
-    pendingOps = [];
-    sauverOps();
-    await chargerListes();
-    showToast("Synchronisation réussie", "success");
-  } catch(e) {
-    showToast("Erreur lors de la sync", "error");
-  }
-  
-  syncing = false;
-  majBtnSync();
+    for(const op of deletes) await ft(`${API}?action=deleteSaisie&index=${op.idx}`);
+    for(const op of adds) await ft(`${API}?action=saisie&date=${enc(op.date)}&ouvrier=${enc(op.ouvrier)}&code_affaire=${enc(op.code_affaire)}&libelle_affaire=${enc(op.libelle_affaire)}&type_travail=${enc(op.type_travail)}&heures=${op.h}`);
+    pendingOps = []; sauverOps(); await chargerListes(); showToast("OK");
+  } catch(e) { showToast("Erreur","error"); }
+  syncing = false; majBtnSync();
 }
 
-// ... (Les autres fonctions addAffaire, etc. restent identiques à ton code d'origine)
 async function addAffaire(){
   const code=document.getElementById('new-affaire-code').value.trim();
   const lib=document.getElementById('new-affaire-lib').value.trim();
-  if(!code||!lib){showToast("Champs requis","error");return;}
+  if(!code||!lib){showToast("Requis","error");return;}
   await ft(`${API}?action=addAffaire&code=${enc(code)}&libelle=${enc(lib)}`);
-  document.getElementById('new-affaire-code').value='';document.getElementById('new-affaire-lib').value='';
-  await chargerListes();showToast("Affaire ajoutée");
+  await chargerListes();
 }
-
+async function addType(){
+  const t=document.getElementById('new-type').value.trim();
+  await ft(`${API}?action=addType&type=${enc(t)}`); await chargerListes();
+}
+async function addOuvrier(){
+  const n=document.getElementById('new-ouvrier').value.trim();
+  await ft(`${API}?action=addOuvrier&nom=${enc(n)}`); await chargerListes();
+}
 function switchTab(tab){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='saisie')||(i===1&&tab==='gestion')));
   document.getElementById('panel-saisie').classList.toggle('active',tab==='saisie');
   document.getElementById('panel-gestion').classList.toggle('active',tab==='gestion');
 }
-
 function showToast(msg,type='success'){
-  const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type}`;
-  t.style.display='block'; setTimeout(()=>{t.style.display='none'},3000);
+  const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2000);
 }
 </script>
 </body>
