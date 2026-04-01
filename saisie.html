@@ -13,202 +13,587 @@
     --orange:#ff7043;--orangebg:rgba(255,112,67,0.15);
     --success:#36d68a;--warn:#ffa733;--red:#ff4d6a;
     --pill:#252840;--pilltext:#8b90a8;
-    --shadow:0 4px 24px rgba(0,0,0,0.4);--shadow-sm:0 2px 8px rgba(0,0,0,0.2);
+    --shadow:0 4px 24px rgba(0,0,0,0.4);--shadow-sm:0 2px 8px rgba(0,0,0,0.3);
+    --input-bg:#252840;
   }
-  * { box-sizing:border-box; margin:0; padding:0; font-family:'Plus Jakarta Sans', sans-serif; }
-  body { background:var(--bg); color:var(--text); line-height:1.6; padding-bottom:100px; min-height:100vh; }
-  .header { background:var(--bg2); padding:1rem; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; display:flex; justify-content:space-between; align-items:center; }
-  .header h1 { font-size:1.1rem; font-weight:700; background:linear-gradient(135deg, #fff 0%, #8b90a8 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-  .container { max-width:600px; margin:0 auto; padding:1rem; }
-  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.25rem; margin-bottom:1rem; box-shadow:var(--shadow-sm); }
-  .form-group { margin-bottom:1rem; }
-  .form-group label { display:block; font-size:0.8rem; font-weight:600; color:var(--text2); margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.5px; }
-  input, select { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:0.75rem; color:var(--text); font-size:0.95rem; outline:none; transition:all 0.2s; }
-  input:focus, select:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accentbg); }
-  .btn { display:inline-flex; align-items:center; justify-content:center; padding:0.75rem 1.5rem; border-radius:10px; font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.2s; border:none; gap:0.5rem; width:100%; }
-  .btn-primary { background:var(--accent); color:white; }
-  .btn-primary:active { transform:scale(0.98); }
-  .btn-sync { background:var(--accentbg); color:var(--accent); width:auto; padding:0.5rem 1rem; font-size:0.8rem; }
-  .btn-sync.syncing { opacity:0.5; cursor:wait; }
-  .saisie-item { background:var(--card2); padding:1rem; border-radius:12px; margin-bottom:0.75rem; border-left:4px solid var(--accent); position:relative; }
-  .saisie-item.pending { border-left-color:var(--orange); }
-  .saisie-info { display:grid; grid-template-columns:1fr auto; gap:0.5rem; margin-bottom:0.5rem; }
-  .saisie-main { font-weight:600; font-size:0.95rem; }
-  .saisie-sub { font-size:0.8rem; color:var(--text2); }
-  .saisie-h { font-weight:700; color:var(--accent); background:var(--accentbg); padding:2px 8px; border-radius:6px; font-size:0.85rem; }
-  .tabs { position:fixed; bottom:0; left:0; right:0; background:var(--bg2); border-top:1px solid var(--border); display:flex; padding:0.5rem; z-index:1000; }
-  .tab { flex:1; display:flex; flex-direction:column; align-items:center; padding:0.5rem; color:var(--text3); font-size:0.7rem; font-weight:600; text-decoration:none; cursor:pointer; }
-  .tab.active { color:var(--accent); }
-  #panel-gestion { display:none; }
-  #panel-gestion.active { display:block; }
-  #panel-saisie { display:none; }
-  #panel-saisie.active { display:block; }
-  .toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); padding:0.75rem 1.5rem; border-radius:50px; font-size:0.85rem; font-weight:600; z-index:2000; display:none; animation:slideDown 0.3s ease; }
-  .toast.success { background:var(--success); color:#004d33; }
-  .toast.error { background:var(--red); color:white; }
-  @keyframes slideDown { from { transform:translate(-50%, -20px); opacity:0; } to { transform:translate(-50%, 0); opacity:1; } }
+  [data-theme="light"] {
+    --bg:#f0f2f8;--bg2:#e8eaf4;--card:#ffffff;--card2:#f5f6ff;--border:rgba(0,0,0,0.07);
+    --text:#0d0f20;--text2:#5c6080;--text3:#9ca0b8;
+    --accent:#5060f0;--accentbg:rgba(80,96,240,0.10);
+    --orange:#f55c2e;--orangebg:rgba(245,92,46,0.10);
+    --success:#1aaa68;--warn:#e08a00;--red:#e8304a;
+    --pill:#eceef8;--pilltext:#5c6080;
+    --shadow:0 4px 24px rgba(80,90,180,0.10);--shadow-sm:0 2px 8px rgba(80,90,180,0.08);
+    --input-bg:#eceef8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:90px;transition:background 0.3s,color 0.3s;font-size:14px;}
+
+  /* PIN */
+  .pin-screen{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+  .pin-screen.hidden{display:none;}
+  .pin-logo{width:60px;height:60px;background:linear-gradient(135deg,var(--accent),#9b59f8);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:22px;box-shadow:0 8px 28px rgba(108,123,255,0.4);}
+  .pin-title{font-size:24px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
+  .pin-sub{font-size:14px;color:var(--text2);font-weight:500;margin-bottom:36px;text-align:center;line-height:1.5;}
+  .pin-dots{display:flex;gap:14px;margin-bottom:36px;}
+  .pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--text3);transition:all 0.2s;}
+  .pin-dot.filled{background:var(--accent);border-color:var(--accent);transform:scale(1.15);}
+  .pin-dot.error{background:var(--red);border-color:var(--red);animation:shake 0.4s;}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}60%{transform:translateX(7px)}}
+  .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:280px;}
+  .pin-btn{padding:18px;background:var(--card);border:1px solid var(--border);border-radius:16px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;cursor:pointer;transition:all 0.15s;box-shadow:var(--shadow-sm);text-align:center;}
+  .pin-btn:hover{background:var(--card2);transform:scale(1.04);}
+  .pin-btn:active{transform:scale(0.96);}
+  .pin-btn.del{font-size:18px;color:var(--text2);}
+  .pin-btn.empty{background:transparent;border:none;box-shadow:none;cursor:default;}
+  .pin-error{margin-top:18px;font-size:13px;font-weight:600;color:var(--red);min-height:20px;text-align:center;}
+
+  /* HEADER */
+  .header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30;background:var(--bg);}
+  .header-left{display:flex;flex-direction:column;}
+  .header-eyebrow{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2px;}
+  .header-title{font-size:20px;font-weight:800;letter-spacing:-0.02em;}
+  .header-week{font-size:13px;font-weight:600;color:var(--accent);margin-top:1px;}
+  .header-actions{display:flex;gap:8px;align-items:center;}
+  .btn-theme{width:40px;height:40px;background:var(--card);border:1px solid var(--border);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:var(--shadow-sm);transition:all 0.2s;}
+  .btn-theme:hover{transform:scale(1.05);}
+  .btn-logout{width:40px;height:40px;background:var(--card);border:1px solid var(--border);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:var(--shadow-sm);transition:all 0.2s;color:var(--text2);}
+  .btn-logout:hover{border-color:var(--red);color:var(--red);}
+
+  /* TABS */
+  .tabs-wrap{padding:0 20px 12px;}
+  .tabs{display:flex;gap:6px;background:var(--card);border-radius:16px;padding:5px;box-shadow:var(--shadow-sm);}
+  .tab{flex:1;padding:9px 12px;border:none;border-radius:12px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:var(--text2);background:transparent;transition:all 0.2s;text-align:center;}
+  .tab.active{background:var(--accent);color:white;box-shadow:0 4px 12px rgba(108,123,255,0.35);}
+  .panel{display:none;}.panel.active{display:block;}
+
+  .container{padding:0 16px;max-width:540px;margin:0 auto;}
+
+  .card{background:var(--card);border-radius:20px;margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+  .card-header{display:flex;align-items:center;gap:10px;padding:14px 16px 0;}
+  .card-icon{width:32px;height:32px;background:var(--accentbg);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+  .card-title{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:0.06em;text-transform:uppercase;}
+  .card-body{padding:12px 16px 16px;}
+
+  .field{margin-bottom:10px;}.field:last-child{margin-bottom:0;}
+  .field-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:5px;display:block;}
+  input,select{width:100%;background:var(--input-bg);border:1.5px solid transparent;border-radius:12px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;padding:11px 14px;outline:none;transition:border-color 0.2s,background 0.2s;appearance:none;}
+  input:focus,select:focus{border-color:var(--accent);background:var(--card2);}
+  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%238b90a8' d='M5 7L1 3h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px;}
+
+  .semaine-nav{display:flex;align-items:center;gap:8px;}.semaine-nav select{flex:1;}
+  .nav-btn{width:42px;height:42px;background:var(--input-bg);border:1.5px solid transparent;border-radius:12px;color:var(--text2);font-size:18px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
+  .nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+  /* JOURS */
+  .jour-item{border-bottom:1px solid var(--border);}.jour-item:last-child{border-bottom:none;}
+  .jour-header{display:flex;align-items:center;padding:13px 16px;cursor:pointer;transition:background 0.15s;gap:12px;}
+  .jour-header:hover{background:var(--card2);}
+  .jour-header.open{background:var(--accentbg);}
+  .jour-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background 0.2s;}
+  .jour-header.open .jour-dot,.jour-header.has-data .jour-dot{background:var(--accent);}
+  .jour-info{flex:1;}
+  .jour-nom{font-size:14px;font-weight:700;}
+  .jour-date-lbl{font-size:12px;color:var(--text2);margin-top:1px;}
+  .jour-right{display:flex;align-items:center;gap:8px;}
+  .jour-total{font-size:14px;font-weight:800;color:var(--accent);background:var(--accentbg);padding:3px 10px;border-radius:50px;}
+  .jour-chevron{color:var(--text3);font-size:11px;transition:transform 0.2s;}
+  .jour-header.open .jour-chevron{transform:rotate(180deg);}
+  .jour-content{display:none;background:var(--card2);border-top:1px solid var(--border);}
+  .jour-content.open{display:block;}
+
+  /* SAISIE LIGNES */
+  .saisie-ligne{display:flex;align-items:flex-start;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);}
+  .saisie-fields{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0;}
+  .saisie-row{display:flex;gap:6px;}
+  .saisie-row select{flex:1;font-size:13px;padding:9px 12px;border-radius:10px;}
+  .saisie-row input{width:76px;flex-shrink:0;font-size:13px;padding:9px 10px;border-radius:10px;}
+  .saisie-actions{display:flex;flex-direction:column;gap:5px;padding-top:1px;flex-shrink:0;}
+  .btn-ic{width:32px;height:32px;border-radius:10px;border:1.5px solid var(--border);background:var(--input-bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.15s;}
+  .btn-ic.save{color:var(--success);}.btn-ic.save:hover{border-color:var(--success);background:rgba(54,214,138,0.12);}
+  .btn-ic.del{color:var(--red);}.btn-ic.del:hover{border-color:var(--red);background:rgba(255,77,106,0.12);}
+  .btn-ic.pend{color:var(--warn);cursor:default;}
+
+  /* NOUVELLE SAISIE */
+  .nouvelle-saisie{padding:14px 16px;}
+  .nouvelle-label{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+  .nouvelle-label::before{content:'+';font-size:14px;}
+  .form-row{display:flex;gap:6px;margin-bottom:8px;}
+  .form-row select{flex:1;font-size:13px;padding:10px 12px;border-radius:10px;}
+  .form-row input{width:76px;flex-shrink:0;font-size:13px;padding:10px;border-radius:10px;}
+
+  /* RACCOURCIS HEURES — grille 3x3 */
+  .h-shortcuts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+  .h-btn{padding:8px 4px;background:var(--pill);border:none;border-radius:10px;color:var(--pilltext);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;text-align:center;}
+  .h-btn:hover{background:var(--accentbg);color:var(--accent);}
+  .h-btn:active{transform:scale(0.96);}
+
+  .btn-ajouter{width:100%;padding:12px;background:var(--accent);color:white;border:none;border-radius:14px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 16px rgba(108,123,255,0.3);transition:all 0.2s;}
+  .btn-ajouter:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(108,123,255,0.4);}
+
+  /* TOTAL */
+  .total-card{background:linear-gradient(135deg,var(--accent) 0%,#9b59f8 100%);border-radius:20px;padding:18px 20px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 24px rgba(108,123,255,0.3);}
+  .total-label{font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px;}
+  .total-val{font-size:32px;font-weight:800;color:white;letter-spacing:-0.02em;line-height:1;}
+  .total-val span{font-size:16px;font-weight:600;opacity:0.7;margin-left:3px;}
+  .total-icon{font-size:32px;opacity:0.8;}
+
+  /* SYNC */
+  .sync-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:540px;padding:12px 16px 20px;background:var(--bg);border-top:1px solid var(--border);z-index:30;}
+  .btn-sync{width:100%;padding:14px;background:var(--card);color:var(--text2);border:1.5px solid var(--border);border-radius:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;}
+  .btn-sync:hover{border-color:var(--accent);color:var(--accent);}
+  .btn-sync.has-pending{background:var(--orange);color:white;border-color:var(--orange);box-shadow:0 4px 16px rgba(255,112,67,0.35);animation:pulse 1.5s infinite;}
+  .btn-sync.syncing{background:var(--text3);color:white;border-color:transparent;cursor:not-allowed;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.8}}
+  .pending-pill{background:rgba(0,0,0,0.2);border-radius:50px;padding:2px 9px;font-size:12px;}
+
+  /* GESTION */
+  .list-items{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;max-height:200px;overflow-y:auto;}
+  .list-item{display:flex;align-items:center;gap:8px;background:var(--input-bg);border-radius:12px;padding:9px 13px;font-size:13px;font-weight:500;}
+  .list-item .code{color:var(--accent);font-size:11px;font-weight:700;letter-spacing:0.05em;flex-shrink:0;}
+  .list-item .inactif{font-size:11px;color:var(--red);margin-left:auto;font-weight:600;}
+  .add-row{display:flex;gap:8px;}.add-row input{flex:1;}
+  .btn-add{width:44px;height:44px;background:var(--accent);border:none;border-radius:12px;color:white;font-size:22px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(108,123,255,0.3);transition:all 0.2s;}
+  .btn-add:hover{transform:translateY(-1px);}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--card);color:var(--text);border:1px solid var(--border);padding:11px 20px;border-radius:50px;font-weight:700;font-size:13px;opacity:0;transition:opacity 0.25s,transform 0.25s;z-index:50;white-space:nowrap;pointer-events:none;box-shadow:var(--shadow);}
+  .toast.success{background:var(--success);color:white;border-color:transparent;}
+  .toast.error{background:var(--red);color:white;border-color:transparent;}
+  .toast.warn{background:var(--warn);color:white;border-color:transparent;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .empty-jour{padding:14px 16px;font-size:13px;color:var(--text3);font-weight:500;}
+  .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
+<!-- PIN SCREEN -->
+<div class="pin-screen" id="pin-screen">
+  <div class="pin-logo">⏱️</div>
+  <div class="pin-title">Feuilles de Temps</div>
+  <div class="pin-sub">Entrez votre code PIN<br>pour accéder à la saisie</div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="pd0"></div>
+    <div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div>
+  </div>
+  <div class="pin-pad">
+    <button class="pin-btn" onclick="pinPress('1')">1</button>
+    <button class="pin-btn" onclick="pinPress('2')">2</button>
+    <button class="pin-btn" onclick="pinPress('3')">3</button>
+    <button class="pin-btn" onclick="pinPress('4')">4</button>
+    <button class="pin-btn" onclick="pinPress('5')">5</button>
+    <button class="pin-btn" onclick="pinPress('6')">6</button>
+    <button class="pin-btn" onclick="pinPress('7')">7</button>
+    <button class="pin-btn" onclick="pinPress('8')">8</button>
+    <button class="pin-btn" onclick="pinPress('9')">9</button>
+    <button class="pin-btn empty"></button>
+    <button class="pin-btn" onclick="pinPress('0')">0</button>
+    <button class="pin-btn del" onclick="pinDel()">⌫</button>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
+</div>
+
 <div class="header">
-  <h1>Saisie Heures</h1>
-  <button id="btn-sync" class="btn btn-sync" onclick="synchroniser()">Synchroniser (0)</button>
+  <div class="header-left">
+    <span class="header-eyebrow">Feuilles de Temps</span>
+    <span class="header-title">Saisie</span>
+    <span class="header-week" id="header-semaine">—</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn-logout" onclick="deconnecter()" title="Se déconnecter">🔒</button>
+    <button class="btn-theme" onclick="toggleTheme()" id="btn-theme">🌙</button>
+  </div>
 </div>
 
-<div id="toast" class="toast"></div>
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('saisie')">📋 Saisie</button>
+    <button class="tab" onclick="switchTab('gestion')">⚙️ Listes</button>
+  </div>
+</div>
 
-<div id="panel-saisie" class="container active">
-  <div class="card">
-    <div class="form-group"><label>Ouvrier</label><select id="ouvrier-select"></select></div>
-    <div class="form-group"><label>Date</label><input type="date" id="date-input"></div>
-    <div class="form-group">
-      <label>Affaire</label>
-      <input type="text" id="affaire-search" placeholder="Rechercher code ou nom..." oninput="filtrerAffaires()">
-      <select id="affaire-select" size="4" style="margin-top:0.5rem;"></select>
+<div class="container">
+  <div class="panel active" id="panel-saisie">
+    <div class="card">
+      <div class="card-header"><div class="card-icon">👤</div><span class="card-title">Identification</span></div>
+      <div class="card-body">
+        <div class="field">
+          <span class="field-label">Votre nom</span>
+          <select id="ouvrier" onchange="renderSemaine()"><option value="">— Sélectionner —</option></select>
+        </div>
+        <div class="field">
+          <span class="field-label">Semaine</span>
+          <div class="semaine-nav">
+            <button class="nav-btn" onclick="changerSemaine(-1)">‹</button>
+            <select id="semaine-select" onchange="onSemaineChange()"></select>
+            <button class="nav-btn" onclick="changerSemaine(1)">›</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="form-group"><label>Type de travail</label><select id="type-select"></select></div>
-    <div class="form-group"><label>Heures</label><input type="text" id="heures-input" placeholder="0.0"></div>
-    <button class="btn btn-primary" onclick="ajouterLocal()">Ajouter la saisie</button>
+    <div class="card">
+      <div class="card-header"><div class="card-icon">📅</div><span class="card-title">Journées</span></div>
+      <div id="jours-container"></div>
+    </div>
+    <div class="total-card">
+      <div>
+        <div class="total-label">Total semaine</div>
+        <div class="total-val" id="total-semaine">—<span>h</span></div>
+      </div>
+      <div class="total-icon">⏱️</div>
+    </div>
   </div>
-  <div id="saisies-liste"></div>
+
+  <div class="panel" id="panel-gestion">
+    <div class="card">
+      <div class="card-header"><div class="card-icon" style="background:var(--orangebg)">🏗️</div><span class="card-title">Affaires / Chantiers</span></div>
+      <div class="card-body">
+        <div class="list-items" id="list-affaires"></div>
+        <div class="add-row">
+          <input type="text" id="new-affaire-code" placeholder="Code" style="max-width:100px">
+          <input type="text" id="new-affaire-lib" placeholder="Libellé">
+          <button class="btn-add" onclick="addAffaire()">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-icon">🔧</div><span class="card-title">Types de travaux</span></div>
+      <div class="card-body">
+        <div class="list-items" id="list-types"></div>
+        <div class="add-row">
+          <input type="text" id="new-type" placeholder="Ex: Carrelage">
+          <button class="btn-add" onclick="addType()">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-icon">👷</div><span class="card-title">Noms</span></div>
+      <div class="card-body">
+        <div class="list-items" id="list-ouvriers"></div>
+        <div class="add-row">
+          <input type="text" id="new-ouvrier" placeholder="Prénom Nom">
+          <button class="btn-add" onclick="addOuvrier()">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div id="panel-gestion" class="container">
-  <div class="card">
-    <h3>Ajouter une Affaire</h3><br>
-    <div class="form-group"><label>Code</label><input id="new-affaire-code"></div>
-    <div class="form-group"><label>Libellé</label><input id="new-affaire-lib"></div>
-    <button class="btn btn-primary" onclick="addAffaire()">Enregistrer</button>
-  </div>
-  <div class="card">
-    <h3>Ajouter un Type</h3><br>
-    <div class="form-group"><input id="new-type" placeholder="Nom du type"></div>
-    <button class="btn btn-primary" onclick="addType()">Enregistrer</button>
-  </div>
-  <div class="card">
-    <h3>Ajouter un Ouvrier</h3><br>
-    <div class="form-group"><input id="new-ouvrier" placeholder="Nom Prénom"></div>
-    <button class="btn btn-primary" onclick="addOuvrier()">Enregistrer</button>
-  </div>
+<div class="sync-bar">
+  <button class="btn-sync" id="btn-sync" onclick="synchroniser()">☁ Synchroniser</button>
 </div>
-
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('saisie')"><span>Saisie</span></div>
-  <div class="tab" onclick="switchTab('gestion')"><span>Gestion</span></div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
-const API = "TON_URL_ICI"; // Remplace par ton URL de déploiement Google
+const API="https://script.google.com/macros/s/AKfycbwdh6MIOMSAIHpjNeB2gRWUOq-gb9RAHm25Dm5MlAASQ2gyaa7PhU5e-H0276VmiD6X/exec";
+let listes={ouvriers:[],affaires:[],types:[],saisies:[]};
+let semaineOffset=0,jourOuvert=null,pendingOps=[],syncing=false;
+const JOURS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
 
-let dataStore = { ouvriers:[], affaires:[], types:[], saisies:[] };
-let pendingOps = JSON.parse(localStorage.getItem('pendingOps') || '[]');
-let syncing = false;
+// ── UTILITAIRE HEURES ─────────────────────────────────────────
+// Convertit "7,5" ou "7.5" en nombre 7.5
+function parseH(v){ return parseFloat(String(v).replace(',','.')); }
 
-async function ft(url){ const r=await fetch(url); return r.json(); }
-function enc(s){ return encodeURIComponent(s); }
+// ── PIN ───────────────────────────────────────────────────────
+const PINS={'1234':'Christopher','5678':'Romy','9012':'Titouane'};
+let pinBuffer='';
+function pinPress(d){if(pinBuffer.length>=4)return;pinBuffer+=d;updatePinDots();if(pinBuffer.length===4)setTimeout(()=>validatePin(),150);}
+function pinDel(){pinBuffer=pinBuffer.slice(0,-1);updatePinDots();document.getElementById('pin-error').textContent='';}
+function updatePinDots(){for(let i=0;i<4;i++){const d=document.getElementById('pd'+i);d.classList.toggle('filled',i<pinBuffer.length);d.classList.remove('error');}}
+function validatePin(){
+  const nom=PINS[pinBuffer];
+  if(nom){
+    document.getElementById('pin-screen').classList.add('hidden');
+    sessionStorage.setItem('pin_nom',nom);
+    const t=setInterval(()=>{const s=document.getElementById('ouvrier');const o=Array.from(s.options).find(o=>o.value===nom);if(o){s.value=nom;renderSemaine();clearInterval(t);}},100);
+  } else {
+    for(let i=0;i<4;i++){const d=document.getElementById('pd'+i);d.classList.remove('filled');d.classList.add('error');}
+    document.getElementById('pin-error').textContent='Code incorrect — réessayez';
+    pinBuffer='';
+    setTimeout(()=>{for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.remove('error');},600);
+  }
+}
+function deconnecter(){if(!confirm('Se déconnecter ?'))return;sessionStorage.removeItem('pin_nom');pinBuffer='';updatePinDots();document.getElementById('pin-error').textContent='';document.getElementById('pin-screen').classList.remove('hidden');}
+(function(){const s=sessionStorage.getItem('pin_nom');if(s&&Object.values(PINS).includes(s)){document.getElementById('pin-screen').classList.add('hidden');const t=setInterval(()=>{const sel=document.getElementById('ouvrier');const o=Array.from(sel.options).find(o=>o.value===s);if(o){sel.value=s;renderSemaine();clearInterval(t);}},100);}})();
 
-window.onload = () => {
-  document.getElementById('date-input').valueAsDate = new Date();
-  chargerListes();
+// ── THEME ─────────────────────────────────────────────────────
+function toggleTheme(){const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙':'☀️';localStorage.setItem('theme',d?'light':'dark');}
+(function(){const s=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',s);document.getElementById('btn-theme').textContent=s==='dark'?'🌙':'☀️';})();
+
+// ── DATES ─────────────────────────────────────────────────────
+function getLundi(o){const t=new Date(),dow=t.getDay()||7,l=new Date(t);l.setDate(t.getDate()-dow+1+o*7);l.setHours(0,0,0,0);return l;}
+function dateStr(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function numSem(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));t.setUTCDate(t.getUTCDate()+4-(t.getUTCDay()||7));return Math.ceil((((t-new Date(Date.UTC(t.getUTCFullYear(),0,1)))/86400000)+1)/7);}
+function affairesActives(){return listes.affaires.slice(1).filter(a=>(a[2]||'Actif')==='Actif');}
+
+// ── SEMAINE ───────────────────────────────────────────────────
+function initSemaineSelect(){
+  const sel=document.getElementById('semaine-select');
+  for(let i=-8;i<=8;i++){const l=getLundi(i);sel.innerHTML+=`<option value="${i}"${i===0?' selected':''}>S${numSem(l)} — ${l.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})} ${l.getFullYear()}</option>`;}
+  majHeader();
+}
+function majHeader(){const l=getLundi(semaineOffset);document.getElementById('header-semaine').textContent=`Semaine ${numSem(l)} · ${l.getFullYear()}`;}
+function onSemaineChange(){semaineOffset=parseInt(document.getElementById('semaine-select').value);jourOuvert=null;majHeader();renderSemaine();}
+function changerSemaine(dir){
+  semaineOffset+=dir;
+  const sel=document.getElementById('semaine-select');
+  if(!Array.from(sel.options).find(o=>parseInt(o.value)===semaineOffset)){const l=getLundi(semaineOffset);sel.innerHTML+=`<option value="${semaineOffset}">S${numSem(l)} — ${l.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})} ${l.getFullYear()}</option>`;}
+  sel.value=semaineOffset;jourOuvert=null;majHeader();renderSemaine();
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function renderSemaine(){
+  const ouvrier=document.getElementById('ouvrier').value;
+  const lundi=getLundi(semaineOffset);
+  const container=document.getElementById('jours-container');
+  container.innerHTML='';
+  let totalSemaine=0;
+  for(let i=0;i<6;i++){
+    const d=new Date(lundi);d.setDate(lundi.getDate()+i);
+    const ds=dateStr(d);
+    const labelDate=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'long'});
+    const lignesEx=ouvrier
+      ? listes.saisies.slice(1)
+          .map((r,idx)=>({idx,date:r[0],ouvrier:r[1],code:r[2],lib:r[3],type:r[4],h:parseH(r[5])}))
+          .filter(r=>r.date===ds&&r.ouvrier===ouvrier)
+      : [];
+    const lignesPend=pendingOps.filter(op=>op.op==='add'&&op.date===ds&&op.ouvrier===ouvrier);
+    const totalJour=lignesEx.reduce((a,r)=>a+r.h,0)+lignesPend.reduce((a,r)=>a+r.h,0);
+    totalSemaine+=totalJour;
+    const isOpen=jourOuvert===ds,hasData=totalJour>0;
+    const item=document.createElement('div');
+    item.className='jour-item';item.id=`jour-${ds}`;
+    item.innerHTML=`<div class="jour-header${isOpen?' open':''}${hasData?' has-data':''}" onclick="toggleJour('${ds}')">
+      <div class="jour-dot"></div>
+      <div class="jour-info"><div class="jour-nom">${JOURS[i]}</div><div class="jour-date-lbl">${labelDate}</div></div>
+      <div class="jour-right">${hasData?`<span class="jour-total">${totalJour.toFixed(1)}h</span>`:''}<span class="jour-chevron">▼</span></div>
+    </div><div class="jour-content${isOpen?' open':''}" id="content-${ds}"></div>`;
+    container.appendChild(item);
+    renderContenuJour(ds,lignesEx,lignesPend,ouvrier);
+  }
+  const tv=document.getElementById('total-semaine');
+  tv.innerHTML=totalSemaine>0?`${totalSemaine.toFixed(1)}<span>h</span>`:`—<span>h</span>`;
   majBtnSync();
-};
-
-async function chargerListes(){
-  try {
-    const res = await ft(`${API}?action=getListes`);
-    dataStore = res;
-    renderSelects();
-    renderSaisies();
-  } catch(e){ showToast("Mode hors-ligne","warn"); renderSaisies(); }
 }
 
-function renderSelects(){
-  const o = document.getElementById('ouvrier-select');
-  o.innerHTML = dataStore.ouvriers.slice(1).map(x=>`<option value="${x[1]}">${x[1]}</option>`).join('');
-  const t = document.getElementById('type-select');
-  t.innerHTML = dataStore.types.slice(1).map(x=>`<option value="${x[0]}">${x[0]}</option>`).join('');
-  filtrerAffaires();
-}
+function renderContenuJour(ds,lignesEx,lignesPend,ouvrier){
+  const content=document.getElementById(`content-${ds}`);if(!content)return;
+  const actives=affairesActives();
+  let html='';
 
-function filtrerAffaires(){
-  const search = document.getElementById('affaire-search').value.toLowerCase();
-  const s = document.getElementById('affaire-select');
-  const filtered = dataStore.affaires.slice(1).filter(a => a[2] === "Actif" && (a[0].toString().toLowerCase().includes(search) || a[1].toLowerCase().includes(search)));
-  s.innerHTML = filtered.map(a => `<option value="${a[0]}|${a[1]}">${a[0]} - ${a[1]}</option>`).join('');
-}
-
-function ajouterLocal(){
-  const date = document.getElementById('date-input').value;
-  const ouvrier = document.getElementById('ouvrier-select').value;
-  const affRaw = document.getElementById('affaire-select').value;
-  const type = document.getElementById('type-select').value;
-  // --- CORRECTIF VIRGULE ICI ---
-  const h = parseFloat(document.getElementById('heures-input').value.replace(',', '.'));
-
-  if(!date || !affRaw || isNaN(h)){ showToast("Champs invalides","error"); return; }
-  const [code, libelle] = affRaw.split('|');
-  const op = { type:'add', date, ouvrier, code_affaire:code, libelle_affaire:libelle, type_travail:type, h, id:Date.now() };
-  pendingOps.push(op);
-  sauverOps();
-  renderSaisies();
-  document.getElementById('heures-input').value = '';
-}
-
-function renderSaisies(){
-  const container = document.getElementById('saisies-liste');
-  let html = '<h3>Récapitulatif</h3><br>';
-  pendingOps.forEach(op => {
-    html += `<div class="saisie-item pending"><div class="saisie-info"><div><div class="saisie-main">${op.code_affaire} - ${op.libelle_affaire}</div><div class="saisie-sub">${op.ouvrier} • ${op.date}</div></div><div class="saisie-h">${op.h}h</div></div><button onclick="supprOp(${op.id})" style="color:var(--red); background:none; border:none; font-size:0.7rem;">Annuler</button></div>`;
+  lignesEx.forEach(r=>{
+    const affOpts=actives.map(a=>`<option value="${a[0]}||${a[1]}"${a[0]===r.code?' selected':''}>${a[0]}${a[1]?' — '+a[1]:''}</option>`).join('');
+    const typeOpts=listes.types.slice(1).map(t=>`<option value="${t[0]}"${t[0]===r.type?' selected':''}>${t[0]}</option>`).join('');
+    // On stocke les valeurs originales pour la mise à jour par contenu
+    html+=`<div class="saisie-ligne" id="ligne-${r.idx}"
+        data-orig-date="${r.date}" data-orig-ouvrier="${r.ouvrier}"
+        data-orig-code="${r.code}" data-orig-type="${r.type}" data-orig-h="${r.h}">
+      <div class="saisie-fields">
+        <div class="saisie-row"><select id="ea-${r.idx}" onchange="marquerModifie(${r.idx})">${affOpts}</select></div>
+        <div class="saisie-row">
+          <select id="et-${r.idx}" onchange="marquerModifie(${r.idx})">${typeOpts}</select>
+          <input type="number" id="eh-${r.idx}" value="${r.h}" min="0.5" max="24" step="0.5" onchange="marquerModifie(${r.idx})">
+        </div>
+      </div>
+      <div class="saisie-actions">
+        <button class="btn-ic save" id="sb-${r.idx}" onclick="marquerUpdate(${r.idx},'${ds}','${ouvrier}')" style="display:none">💾</button>
+        <button class="btn-ic del" onclick="marquerDelete(${r.idx})">✕</button>
+      </div>
+    </div>`;
   });
-  dataStore.saisies.slice(1).reverse().forEach((s, i) => {
-    const realIdx = dataStore.saisies.length - 2 - i;
-    html += `<div class="saisie-item"><div class="saisie-info"><div><div class="saisie-main">${s[2]} - ${s[3]}</div><div class="saisie-sub">${s[1]} • ${s[0]}</div></div><div class="saisie-h">${s[5]}h</div></div><button onclick="supprSaisieServer(${realIdx})" style="color:var(--red); background:none; border:none; font-size:0.7rem;">Supprimer</button></div>`;
+
+  lignesPend.forEach(op=>{
+    html+=`<div class="saisie-ligne" style="opacity:0.5;border-left:3px solid var(--warn)">
+      <div class="saisie-fields">
+        <div class="saisie-row"><select disabled><option>${op.code_affaire}${op.libelle_affaire?' — '+op.libelle_affaire:''}</option></select></div>
+        <div class="saisie-row"><select disabled><option>${op.type_travail}</option></select><input type="number" value="${op.h}" disabled></div>
+      </div>
+      <div class="saisie-actions"><span class="btn-ic pend">⏳</span></div>
+    </div>`;
   });
-  container.innerHTML = html;
+
+  if(!lignesEx.length&&!lignesPend.length)html+=`<div class="empty-jour">Aucune saisie pour cette journée</div>`;
+
+  // Raccourcis 1h à 8.5h en grille 3x3
+  const shortcuts=[1,2,3,4,5,6,7,8,8.5];
+  html+=`<div class="nouvelle-saisie">
+    <div class="nouvelle-label">Nouvelle saisie</div>
+    <div class="form-row"><select id="na-${ds}"><option value="">— Affaire —</option>${actives.map(a=>`<option value="${a[0]}||${a[1]}">${a[0]}${a[1]?' — '+a[1]:''}</option>`).join('')}</select></div>
+    <div class="form-row">
+      <select id="nt-${ds}"><option value="">— Type —</option>${listes.types.slice(1).map(t=>`<option value="${t[0]}">${t[0]}</option>`).join('')}</select>
+      <input type="number" id="nh-${ds}" min="0.5" max="24" step="0.5" placeholder="h">
+    </div>
+    <div class="h-shortcuts">
+      ${shortcuts.map(v=>`<button class="h-btn" onclick="setNH('${ds}',${v})">${v}h</button>`).join('')}
+    </div>
+    <button class="btn-ajouter" onclick="ajouterLocal('${ds}')">Ajouter</button>
+  </div>`;
+  content.innerHTML=html;
 }
 
-function supprOp(id){ pendingOps = pendingOps.filter(o => o.id !== id); sauverOps(); renderSaisies(); }
-function supprSaisieServer(idx){ if(confirm("Supprimer ?")){ pendingOps.push({ type:'delete', idx: idx }); sauverOps(); renderSaisies(); } }
-function sauverOps(){ localStorage.setItem('pendingOps', JSON.stringify(pendingOps)); majBtnSync(); }
-function majBtnSync(){ const btn = document.getElementById('btn-sync'); btn.textContent = `Synchroniser (${pendingOps.length})`; }
+function toggleJour(ds){jourOuvert=jourOuvert===ds?null:ds;renderSemaine();if(jourOuvert)setTimeout(()=>document.getElementById(`jour-${ds}`)?.scrollIntoView({behavior:'smooth',block:'nearest'}),80);}
+function setNH(ds,v){const el=document.getElementById(`nh-${ds}`);if(el)el.value=v;}
 
+// ── OPÉRATIONS LOCALES ────────────────────────────────────────
+function ajouterLocal(ds){
+  const ouvrier=document.getElementById('ouvrier').value;
+  if(!ouvrier){showToast("Sélectionnez votre nom","error");return;}
+  const av=document.getElementById(`na-${ds}`)?.value;
+  const tv=document.getElementById(`nt-${ds}`)?.value;
+  const h=parseH(document.getElementById(`nh-${ds}`)?.value);
+  if(!av||!tv||!h){showToast("Remplissez tous les champs","error");return;}
+  const [ca,la]=(av+'||').split('||');
+  pendingOps.push({op:'add',date:ds,ouvrier,code_affaire:ca,libelle_affaire:la||'',type_travail:tv,h});
+  showToast("Ajouté — synchronisez","warn");
+  renderSemaine();
+}
+
+function marquerModifie(idx){const btn=document.getElementById(`sb-${idx}`);if(btn)btn.style.display='flex';}
+
+function marquerUpdate(idx,ds,ouvrier){
+  const av=document.getElementById(`ea-${idx}`)?.value;
+  const tv=document.getElementById(`et-${idx}`)?.value;
+  const h=parseH(document.getElementById(`eh-${idx}`)?.value);
+  if(!av||!tv||!h){showToast("Champs invalides","error");return;}
+  const [ca,la]=(av+'||').split('||');
+  // Récupérer les valeurs originales depuis le DOM
+  const ligne=document.getElementById(`ligne-${idx}`);
+  const origDate=ligne?.dataset.origDate||ds;
+  const origOuvrier=ligne?.dataset.origOuvrier||ouvrier;
+  const origCode=ligne?.dataset.origCode||'';
+  const origType=ligne?.dataset.origType||'';
+  const origH=parseH(ligne?.dataset.origH||0);
+
+  pendingOps=pendingOps.filter(o=>!(o.op==='update'&&o.idx===idx));
+  pendingOps.push({op:'update',idx,
+    // Valeurs originales pour retrouver la ligne dans Sheets
+    old_date:origDate,old_ouvrier:origOuvrier,old_code:origCode,old_type:origType,old_h:origH,
+    // Nouvelles valeurs
+    date:ds,ouvrier,code_affaire:ca,libelle_affaire:la||'',type_travail:tv,h
+  });
+  const btn=document.getElementById(`sb-${idx}`);if(btn)btn.style.display='none';
+  showToast("Modifié — synchronisez","warn");
+  majBtnSync();
+}
+
+function marquerDelete(idx){
+  if(!confirm("Supprimer cette saisie ?"))return;
+  const ligne=document.getElementById(`ligne-${idx}`);
+  const origDate=ligne?.dataset.origDate||'';
+  const origOuvrier=ligne?.dataset.origOuvrier||'';
+  const origCode=ligne?.dataset.origCode||'';
+  const origType=ligne?.dataset.origType||'';
+  const origH=parseH(ligne?.dataset.origH||0);
+  pendingOps=pendingOps.filter(o=>!(o.op==='update'&&o.idx===idx));
+  pendingOps.push({op:'delete',
+    date:origDate,ouvrier:origOuvrier,code_affaire:origCode,type_travail:origType,h:origH
+  });
+  if(ligne)ligne.style.display='none';
+  showToast("Supprimé — synchronisez","warn");
+  majBtnSync();
+}
+
+function majBtnSync(){
+  const btn=document.getElementById('btn-sync'),n=pendingOps.length;
+  if(syncing){btn.className='btn-sync syncing';btn.innerHTML=`<span class="spin"></span> Synchronisation...`;}
+  else if(n>0){btn.className='btn-sync has-pending';btn.innerHTML=`☁ Synchroniser <span class="pending-pill">${n}</span>`;}
+  else{btn.className='btn-sync';btn.innerHTML=`☁ Synchroniser`;}
+}
+
+// ── SYNCHRONISATION ───────────────────────────────────────────
 async function synchroniser(){
-  if(syncing) return; syncing = true;
-  // --- CORRECTIF TRI DÉCROISSANT POUR LA CONCURRENCE ---
-  const deletes = pendingOps.filter(o => o.type === 'delete').sort((a,b) => b.idx - a.idx);
-  const adds = pendingOps.filter(o => o.type === 'add');
+  if(syncing)return;
+  syncing=true;majBtnSync();
+  if(pendingOps.length===0){await chargerListes();syncing=false;majBtnSync();showToast("À jour","success");return;}
 
-  try {
-    for(const op of deletes) await ft(`${API}?action=deleteSaisie&index=${op.idx}`);
-    for(const op of adds) await ft(`${API}?action=saisie&date=${enc(op.date)}&ouvrier=${enc(op.ouvrier)}&code_affaire=${enc(op.code_affaire)}&libelle_affaire=${enc(op.libelle_affaire)}&type_travail=${enc(op.type_travail)}&heures=${op.h}`);
-    pendingOps = []; sauverOps(); await chargerListes(); showToast("OK");
-  } catch(e) { showToast("Erreur","error"); }
-  syncing = false; majBtnSync();
+  const deletes=pendingOps.filter(o=>o.op==='delete');
+  const updates=pendingOps.filter(o=>o.op==='update');
+  const adds=pendingOps.filter(o=>o.op==='add');
+
+  try{
+    // Deletes : on cherche par contenu, pas par index → peuvent s'exécuter en parallèle
+    await Promise.all(deletes.map(op=>
+      ft(`${API}?action=deleteSaisie&date=${enc(op.date)}&ouvrier=${enc(op.ouvrier)}&code_affaire=${enc(op.code_affaire)}&type_travail=${enc(op.type_travail)}&heures=${op.h}`)
+    ));
+    // Updates : par contenu original
+    await Promise.all(updates.map(op=>
+      ft(`${API}?action=updateSaisie`+
+        `&old_date=${enc(op.old_date)}&old_ouvrier=${enc(op.old_ouvrier)}&old_code=${enc(op.old_code)}&old_type=${enc(op.old_type)}&old_heures=${op.old_h}`+
+        `&date=${enc(op.date)}&ouvrier=${enc(op.ouvrier)}&code_affaire=${enc(op.code_affaire)}&libelle_affaire=${enc(op.libelle_affaire)}&type_travail=${enc(op.type_travail)}&heures=${op.h}`)
+    ));
+    // Adds : simples ajouts
+    await Promise.all(adds.map(op=>
+      ft(`${API}?action=saisie&date=${enc(op.date)}&ouvrier=${enc(op.ouvrier)}&code_affaire=${enc(op.code_affaire)}&libelle_affaire=${enc(op.libelle_affaire)}&type_travail=${enc(op.type_travail)}&heures=${op.h}`)
+    ));
+    pendingOps=[];
+    showToast("Synchronisé ✓","success");
+    await chargerListes();
+  }catch(e){
+    showToast("Erreur réseau","error");
+  }
+  syncing=false;majBtnSync();
 }
 
+function ft(url,ms=15000){return Promise.race([fetch(url),new Promise((_,r)=>setTimeout(()=>r(new Error('t')),ms))]);}
+function enc(v){return encodeURIComponent(v||'');}
+
+// ── LISTES ────────────────────────────────────────────────────
+async function chargerListes(){
+  try{
+    const r=await ft(API+"?action=getListes");
+    const d=await r.json();
+    listes=d;
+    remplirSelectNom();
+    remplirListesGestion();
+    renderSemaine();
+  }catch(e){showToast("Erreur de connexion","error");}
+}
+function remplirSelectNom(){
+  const sel=document.getElementById('ouvrier'),val=sel.value;
+  sel.innerHTML='<option value="">— Sélectionner —</option>';
+  listes.ouvriers.slice(1).forEach(r=>sel.innerHTML+=`<option value="${r[1]}">${r[1]}</option>`);
+  if(val)sel.value=val;
+}
+function remplirListesGestion(){
+  document.getElementById('list-affaires').innerHTML=listes.affaires.slice(1).map(r=>{
+    const actif=(r[2]||'Actif')==='Actif';
+    return`<div class="list-item"><span class="code">${r[0]}</span><span>${r[1]}</span>${!actif?'<span class="inactif">Inactif</span>':''}</div>`;
+  }).join('');
+  document.getElementById('list-types').innerHTML=listes.types.slice(1).map(r=>`<div class="list-item">${r[0]}</div>`).join('');
+  document.getElementById('list-ouvriers').innerHTML=listes.ouvriers.slice(1).map(r=>`<div class="list-item">${r[1]}</div>`).join('');
+}
 async function addAffaire(){
-  const code=document.getElementById('new-affaire-code').value.trim();
-  const lib=document.getElementById('new-affaire-lib').value.trim();
-  if(!code||!lib){showToast("Requis","error");return;}
+  const code=document.getElementById('new-affaire-code').value.trim(),lib=document.getElementById('new-affaire-lib').value.trim();
+  if(!code||!lib){showToast("Code et libellé requis","error");return;}
   await ft(`${API}?action=addAffaire&code=${enc(code)}&libelle=${enc(lib)}`);
-  await chargerListes();
+  document.getElementById('new-affaire-code').value='';document.getElementById('new-affaire-lib').value='';
+  await chargerListes();showToast("Affaire ajoutée","success");
 }
 async function addType(){
-  const t=document.getElementById('new-type').value.trim();
-  await ft(`${API}?action=addType&type=${enc(t)}`); await chargerListes();
+  const type=document.getElementById('new-type').value.trim();if(!type){showToast("Requis","error");return;}
+  await ft(`${API}?action=addType&type=${enc(type)}`);document.getElementById('new-type').value='';await chargerListes();showToast("Type ajouté","success");
 }
 async function addOuvrier(){
-  const n=document.getElementById('new-ouvrier').value.trim();
-  await ft(`${API}?action=addOuvrier&nom=${enc(n)}`); await chargerListes();
+  const nom=document.getElementById('new-ouvrier').value.trim();if(!nom){showToast("Requis","error");return;}
+  await ft(`${API}?action=addOuvrier&nom=${enc(nom)}`);document.getElementById('new-ouvrier').value='';await chargerListes();showToast("Nom ajouté","success");
 }
 function switchTab(tab){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='saisie')||(i===1&&tab==='gestion')));
   document.getElementById('panel-saisie').classList.toggle('active',tab==='saisie');
   document.getElementById('panel-gestion').classList.toggle('active',tab==='gestion');
 }
 function showToast(msg,type='success'){
-  const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2000);
+  const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type}`;
+  setTimeout(()=>t.classList.add('show'),10);setTimeout(()=>t.classList.remove('show'),2800);
 }
+
+initSemaineSelect();
+chargerListes();
 </script>
 </body>
 </html>
