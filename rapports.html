@@ -6,389 +6,642 @@
 <title>Rapports — Feuilles de Temps</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  [data-theme="dark"] {
-    --bg:#0d0f14;--bg2:#161920;--card:#1e2130;--card2:#252840;--border:rgba(255,255,255,0.07);
-    --text:#f0f2f8;--text2:#8b90a8;--text3:#545870;
-    --accent:#6c7bff;--accent2:#8b97ff;--accentbg:rgba(108,123,255,0.15);
-    --orange:#ff7043;--orangebg:rgba(255,112,67,0.15);
-    --success:#36d68a;--warn:#ffa733;--red:#ff4d6a;
-    --pill:#252840;--pilltext:#8b90a8;
-    --shadow:0 4px 24px rgba(0,0,0,0.4);--shadow-sm:0 2px 8px rgba(0,0,0,0.3);
-    --input-bg:#252840;
+/* ── THEMES ── */
+[data-theme="dark"]{
+  --bg:#0d0f14;--card:#1e2130;--card2:#252840;--border:rgba(255,255,255,0.07);
+  --text:#f0f2f8;--text2:#8b90a8;--text3:#545870;
+  --accent:#6c7bff;--accentbg:rgba(108,123,255,0.15);
+  --orange:#ff7043;--orangebg:rgba(255,112,67,0.15);
+  --success:#36d68a;--warn:#ffa733;--red:#ff4d6a;
+  --pill:#252840;--pilltext:#8b90a8;
+  --shadow:0 4px 24px rgba(0,0,0,0.4);--shadow-sm:0 2px 8px rgba(0,0,0,0.3);
+  --input-bg:#252840;
+}
+[data-theme="light"]{
+  --bg:#f0f2f8;--card:#ffffff;--card2:#f5f6ff;--border:rgba(0,0,0,0.08);
+  --text:#0d0f20;--text2:#5c6080;--text3:#9ca0b8;
+  --accent:#5060f0;--accentbg:rgba(80,96,240,0.10);
+  --orange:#f55c2e;--orangebg:rgba(245,92,46,0.10);
+  --success:#1aaa68;--warn:#e08a00;--red:#e8304a;
+  --pill:#eceef8;--pilltext:#5c6080;
+  --shadow:0 4px 24px rgba(80,90,180,0.10);--shadow-sm:0 2px 8px rgba(80,90,180,0.08);
+  --input-bg:#eceef8;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background 0.3s,color 0.3s;font-size:14px;}
+
+/* ── LAYOUT PC ── */
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{width:300px;flex-shrink:0;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;}
+.sidebar-header{padding:20px 20px 16px;border-bottom:1px solid var(--border);}
+.sidebar-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#9b59f8);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.logo-text{font-size:16px;font-weight:800;letter-spacing:-0.01em;}
+.logo-sub{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;}
+
+.sidebar-section{padding:16px 20px;border-bottom:1px solid var(--border);}
+.sidebar-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;}
+
+/* Tabs verticaux */
+.nav-tabs{display:flex;flex-direction:column;gap:4px;}
+.nav-tab{display:flex;align-items:center;gap:10px;padding:10px 12px;border:none;border-radius:10px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text2);background:transparent;text-align:left;width:100%;transition:all 0.15s;}
+.nav-tab:hover{background:var(--card2);}
+.nav-tab.active{background:var(--accentbg);color:var(--accent);}
+.nav-tab .tab-icon{font-size:16px;width:22px;text-align:center;}
+
+/* Filtres */
+.field{margin-bottom:10px;}
+.field:last-child{margin-bottom:0;}
+.field-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:5px;display:block;}
+input[type="date"],select{width:100%;background:var(--input-bg);border:1.5px solid transparent;border-radius:10px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;padding:9px 12px;outline:none;transition:border-color 0.2s;appearance:none;color-scheme:light dark;}
+input[type="date"]:focus,select:focus{border-color:var(--accent);}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%238b90a8' d='M5 7L1 3h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;}
+
+.btn-generer{width:100%;padding:11px;background:var(--accent);color:white;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 4px 12px rgba(108,123,255,0.3);transition:all 0.2s;margin-top:4px;}
+.btn-generer:hover{transform:translateY(-1px);}
+.btn-generer:disabled{background:var(--text3);box-shadow:none;cursor:not-allowed;transform:none;}
+
+.sidebar-footer{padding:16px 20px;margin-top:auto;border-top:1px solid var(--border);display:flex;gap:8px;}
+.btn-sm{flex:1;padding:9px;border:1px solid var(--border);border-radius:10px;background:transparent;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;text-align:center;}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent);}
+.btn-sm.print{background:var(--accent);color:white;border-color:transparent;}
+.btn-sm.print:hover{background:#7c8bff;transform:none;}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:32px 40px;}
+
+.panel{display:none;}.panel.active{display:block;}
+
+/* ── RAPPORT PAIE ── */
+.rapport-header{margin-bottom:28px;}
+.rapport-titre{font-size:28px;font-weight:800;letter-spacing:-0.02em;margin-bottom:4px;}
+.rapport-sous-titre{font-size:14px;color:var(--text2);font-weight:500;}
+
+/* Bande résumé */
+.resume-bande{display:flex;gap:12px;margin-bottom:28px;}
+.resume-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;flex:1;box-shadow:var(--shadow-sm);}
+.resume-val{font-size:28px;font-weight:800;letter-spacing:-0.02em;line-height:1;color:var(--text);}
+.resume-val .u{font-size:14px;font-weight:600;color:var(--text2);margin-left:3px;}
+.resume-lbl{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.07em;text-transform:uppercase;margin-top:4px;}
+.resume-box.accent-box{background:linear-gradient(135deg,var(--accent),#9b59f8);border-color:transparent;}
+.resume-box.accent-box .resume-val{color:white;}
+.resume-box.accent-box .resume-val .u{color:rgba(255,255,255,0.6);}
+.resume-box.accent-box .resume-lbl{color:rgba(255,255,255,0.65);}
+
+/* Tableau rapport */
+.rapport-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:20px;}
+.rapport-table-titre{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.rapport-table-titre-text{font-size:13px;font-weight:700;color:var(--text2);letter-spacing:0.06em;text-transform:uppercase;}
+.rapport-table-titre-total{font-size:16px;font-weight:800;color:var(--accent);}
+
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead{background:var(--card2);}
+th{padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;}
+th.right{text-align:right;}
+td{padding:10px 16px;border-top:1px solid var(--border);vertical-align:middle;}
+td.right{text-align:right;}
+
+/* Séparateurs semaine */
+tr.sep-semaine td{background:var(--card2);font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.07em;text-transform:uppercase;padding:7px 16px;border-top:2px solid var(--border);}
+tr.sep-semaine td.total-sem{text-align:right;font-size:14px;font-weight:800;color:var(--accent);}
+tr.jour-row:hover td{background:rgba(108,123,255,0.04);}
+tr.total-periode td{background:var(--accentbg);font-weight:800;font-size:14px;border-top:2px solid var(--accent);}
+tr.total-periode td.right{color:var(--accent);font-size:16px;}
+
+.tag-jour{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;background:var(--pill);color:var(--pilltext);}
+.h-num{font-weight:700;color:var(--text);}
+.dimanche{color:var(--text3)!important;}
+
+/* Gestion */
+.gestion-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.gestion-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow-sm);}
+.gestion-card-title{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.list-items{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;max-height:220px;overflow-y:auto;}
+.list-item{display:flex;align-items:center;gap:8px;background:var(--input-bg);border-radius:10px;padding:8px 12px;font-size:13px;font-weight:500;}
+.list-item .code{color:var(--accent);font-size:11px;font-weight:700;flex-shrink:0;}
+.add-row{display:flex;gap:6px;}.add-row input{flex:1;}
+.btn-add{width:40px;height:40px;background:var(--accent);border:none;border-radius:10px;color:white;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
+.btn-add:hover{transform:translateY(-1px);}
+
+/* Statut toggle */
+.ag-item{display:flex;align-items:center;gap:10px;background:var(--input-bg);border-radius:10px;padding:9px 12px;margin-bottom:5px;}
+.ag-code{color:var(--accent);font-size:11px;font-weight:700;flex-shrink:0;min-width:70px;}
+.ag-lib{flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.toggle-wrap{display:flex;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;}
+.toggle-track{width:34px;height:18px;background:var(--border);border-radius:50px;position:relative;transition:background 0.2s;}
+.toggle-track.on{background:var(--success);}
+.toggle-thumb{width:12px;height:12px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:left 0.2s;}
+.toggle-track.on .toggle-thumb{left:19px;}
+.toggle-lbl{font-size:11px;font-weight:700;color:var(--text3);min-width:38px;}
+
+.empty-state{padding:60px 20px;text-align:center;color:var(--text3);}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+.empty-text{font-size:14px;font-weight:600;}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--card);color:var(--text);border:1px solid var(--border);padding:11px 20px;border-radius:50px;font-weight:700;font-size:13px;opacity:0;transition:opacity 0.25s,transform 0.25s;z-index:50;white-space:nowrap;pointer-events:none;box-shadow:var(--shadow);}
+.toast.success{background:var(--success);color:white;border-color:transparent;}
+.toast.error{background:var(--red);color:white;border-color:transparent;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* PIN */
+.pin-screen{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.pin-screen.hidden{display:none;}
+.pin-logo{width:64px;height:64px;background:linear-gradient(135deg,var(--accent),#9b59f8);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:24px;box-shadow:0 8px 28px rgba(108,123,255,0.4);}
+.pin-title{font-size:26px;font-weight:800;margin-bottom:6px;}
+.pin-sub{font-size:14px;color:var(--text2);margin-bottom:36px;text-align:center;line-height:1.5;}
+.pin-dots{display:flex;gap:14px;margin-bottom:36px;}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--text3);transition:all 0.2s;}
+.pin-dot.filled{background:var(--accent);border-color:var(--accent);transform:scale(1.15);}
+.pin-dot.error{background:var(--red);border-color:var(--red);animation:shake 0.4s;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}60%{transform:translateX(7px)}}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:280px;}
+.pin-btn{padding:18px;background:var(--card);border:1px solid var(--border);border-radius:14px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;cursor:pointer;transition:all 0.15s;box-shadow:var(--shadow-sm);}
+.pin-btn:hover{background:var(--card2);transform:scale(1.04);}
+.pin-btn:active{transform:scale(0.96);}
+.pin-btn.del{font-size:18px;color:var(--text2);}
+.pin-btn.empty{background:transparent;border:none;box-shadow:none;cursor:default;}
+.pin-error{margin-top:18px;font-size:13px;font-weight:600;color:var(--red);min-height:20px;}
+
+/* conn bar */
+.conn-bar{height:3px;background:var(--warn);position:fixed;top:0;left:0;right:0;z-index:200;opacity:0;transition:opacity 0.3s;}
+.conn-bar.loading{opacity:1;animation:cpulse 1s infinite;}
+.conn-bar.error{opacity:1;background:var(--red);}
+@keyframes cpulse{0%,100%{opacity:0.5}50%{opacity:1}}
+
+/* ═══════════════════════════════
+   IMPRESSION A4
+   ═══════════════════════════════ */
+@media print {
+  @page { size: A4 portrait; margin: 12mm 14mm; }
+
+  body { background: white !important; color: black !important; font-size: 10pt; }
+  .pin-screen,.sidebar,.conn-bar,.toast { display: none !important; }
+  .app { display: block !important; height: auto !important; }
+  .main { padding: 0 !important; overflow: visible !important; }
+  .panel { display: block !important; }
+
+  /* Cacher tout sauf le rapport actif */
+  #panel-affaires, #panel-gestion { display: none !important; }
+  #panel-paie { display: block !important; }
+
+  .rapport-header { margin-bottom: 10mm; }
+  .rapport-titre { font-size: 16pt; font-weight: 800; color: black; }
+  .rapport-sous-titre { font-size: 10pt; color: #555; }
+
+  .resume-bande { gap: 6mm; margin-bottom: 8mm; }
+  .resume-box {
+    border: 1px solid #ccc !important;
+    border-radius: 4pt !important;
+    padding: 6mm 8mm !important;
+    background: white !important;
+    box-shadow: none !important;
   }
-  [data-theme="light"] {
-    --bg:#f0f2f8;--bg2:#e8eaf4;--card:#ffffff;--card2:#f5f6ff;--border:rgba(0,0,0,0.07);
-    --text:#0d0f20;--text2:#5c6080;--text3:#9ca0b8;
-    --accent:#5060f0;--accent2:#6c7bff;--accentbg:rgba(80,96,240,0.10);
-    --orange:#f55c2e;--orangebg:rgba(245,92,46,0.10);
-    --success:#1aaa68;--warn:#e08a00;--red:#e8304a;
-    --pill:#eceef8;--pilltext:#5c6080;
-    --shadow:0 4px 24px rgba(80,90,180,0.10);--shadow-sm:0 2px 8px rgba(80,90,180,0.08);
-    --input-bg:#eceef8;
+  .resume-box.accent-box {
+    background: #f0f0ff !important;
+    border-color: #6c7bff !important;
   }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:40px;font-size:14px;transition:background 0.3s,color 0.3s;}
+  .resume-box.accent-box .resume-val { color: #3040c0 !important; }
+  .resume-box.accent-box .resume-val .u { color: #3040c0 !important; }
+  .resume-box.accent-box .resume-lbl { color: #555 !important; }
+  .resume-val { font-size: 14pt !important; color: black !important; }
+  .resume-lbl { font-size: 8pt !important; color: #666 !important; }
 
-  .header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30;background:var(--bg);}
-  .header-left{display:flex;flex-direction:column;}
-  .header-eyebrow{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2px;}
-  .header-title{font-size:20px;font-weight:800;letter-spacing:-0.02em;}
-  .btn-theme{width:40px;height:40px;background:var(--card);border:1px solid var(--border);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:var(--shadow-sm);transition:all 0.2s;color:var(--text);}
-  .btn-theme:hover{transform:scale(1.05);}
+  .rapport-table-wrap {
+    border: 1px solid #ccc !important;
+    border-radius: 4pt !important;
+    box-shadow: none !important;
+    background: white !important;
+    page-break-inside: avoid;
+  }
+  .rapport-table-titre { padding: 6pt 10pt !important; background: white !important; border-bottom: 1px solid #ddd !important; }
+  .rapport-table-titre-text { font-size: 9pt !important; color: #555 !important; }
+  .rapport-table-titre-total { font-size: 11pt !important; color: #3040c0 !important; }
 
-  .tabs-wrap{padding:0 20px 12px;}
-  .tabs{display:flex;gap:6px;background:var(--card);border-radius:16px;padding:5px;box-shadow:var(--shadow-sm);}
-  .tab{flex:1;padding:9px 10px;border:none;border-radius:12px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:var(--text2);background:transparent;transition:all 0.2s;text-align:center;}
-  .tab.active{background:var(--accent);color:white;box-shadow:0 4px 12px rgba(108,123,255,0.35);}
-  .panel{display:none;}.panel.active{display:block;}
+  table { font-size: 9pt !important; }
+  th { padding: 5pt 8pt !important; background: #f5f5f5 !important; color: #555 !important; font-size: 8pt !important; }
+  td { padding: 4pt 8pt !important; border-top: 1px solid #eee !important; color: black !important; }
 
-  .container{padding:0 16px;max-width:700px;margin:0 auto;}
+  tr.sep-semaine td { background: #eeeeff !important; color: #3040c0 !important; font-size: 8pt !important; padding: 4pt 8pt !important; border-top: 1.5pt solid #aac !important; }
+  tr.sep-semaine td.total-sem { color: #3040c0 !important; font-size: 10pt !important; }
+  tr.jour-row:hover td { background: transparent !important; }
+  tr.total-periode td { background: #f0f0ff !important; font-size: 10pt !important; border-top: 1.5pt solid #6c7bff !important; }
+  tr.total-periode td.right { color: #3040c0 !important; font-size: 12pt !important; }
 
-  .card{background:var(--card);border-radius:20px;margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
-  .card-header{display:flex;align-items:center;gap:10px;padding:14px 16px 0;}
-  .card-icon{width:32px;height:32px;background:var(--accentbg);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
-  .card-title{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:0.06em;text-transform:uppercase;}
-  .card-body{padding:12px 16px 16px;}
-
-  label{display:block;font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:5px;margin-top:11px;}
-  label:first-child{margin-top:0;}
-  input,select{width:100%;background:var(--input-bg);border:1.5px solid transparent;border-radius:12px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;padding:11px 14px;outline:none;transition:border-color 0.2s,background 0.2s;appearance:none;}
-  input[type="date"]{color-scheme:light dark;}
-  input:focus,select:focus{border-color:var(--accent);background:var(--card2);}
-  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%238b90a8' d='M5 7L1 3h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px;}
-
-  .filters-row{display:flex;gap:10px;}.filters-row>div{flex:1;}
-
-  .btn-generer{width:100%;padding:13px;background:var(--accent);color:white;border:none;border-radius:14px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;margin-top:12px;box-shadow:0 4px 16px rgba(108,123,255,0.3);transition:all 0.2s;}
-  .btn-generer:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(108,123,255,0.4);}
-  .btn-generer:disabled{background:var(--text3);box-shadow:none;cursor:not-allowed;transform:none;}
-
-  /* STATS */
-  .stats-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
-  .stat-box{flex:1;min-width:90px;background:var(--card);border-radius:16px;padding:14px;border:1px solid var(--border);box-shadow:var(--shadow-sm);}
-  .stat-val{font-size:26px;font-weight:800;color:var(--text);letter-spacing:-0.02em;line-height:1;}
-  .stat-val .unit{font-size:14px;font-weight:600;color:var(--text2);}
-  .stat-lbl{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-top:3px;}
-
-  /* HERO AFFAIRE */
-  .affaire-hero{background:linear-gradient(135deg,var(--accent) 0%,#9b59f8 100%);border-radius:20px;padding:20px;margin-bottom:12px;color:white;box-shadow:0 8px 24px rgba(108,123,255,0.3);}
-  .affaire-hero-code{font-size:11px;font-weight:700;opacity:0.6;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;}
-  .affaire-hero-lib{font-size:20px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;}
-  .affaire-hero-periode{font-size:12px;opacity:0.55;margin-bottom:14px;}
-  .affaire-hero-total{font-size:42px;font-weight:800;letter-spacing:-0.03em;line-height:1;}
-  .affaire-hero-total span{font-size:20px;opacity:0.6;margin-left:3px;}
-
-  /* TABLE */
-  .table-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--border);}
-  table{width:100%;border-collapse:collapse;font-size:13px;}
-  thead tr{background:var(--card2);}
-  th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;}
-  td{padding:10px 14px;border-top:1px solid var(--border);vertical-align:middle;}
-  tr:hover td{background:var(--card2);}
-  .h-val{font-weight:800;font-size:15px;color:var(--accent);}
-  .tag{display:inline-block;padding:3px 10px;border-radius:50px;font-size:12px;font-weight:700;}
-  .tag-nom{background:var(--pill);color:var(--pilltext);}
-  .tag-aff{background:var(--orangebg);color:var(--orange);}
-
-  /* NOM BLOCK */
-  .nom-block{background:var(--card);border-radius:16px;margin-bottom:8px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-sm);}
-  .nom-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;transition:background 0.15s;}
-  .nom-header:hover{background:var(--card2);}
-  .nom-header.open{background:var(--accentbg);}
-  .nom-label{font-size:15px;font-weight:700;}
-  .nom-total{font-size:15px;font-weight:800;color:var(--accent);background:var(--accentbg);padding:4px 12px;border-radius:50px;}
-  .nom-detail{display:none;border-top:1px solid var(--border);}
-  .nom-detail.open{display:block;}
-
-  .semaine-bloc{border-top:1px solid var(--border);}
-  .semaine-bloc:first-child{border-top:none;}
-  .semaine-header{display:flex;justify-content:space-between;align-items:center;padding:9px 16px;background:var(--card2);font-size:12px;font-weight:700;color:var(--accent);letter-spacing:0.05em;text-transform:uppercase;}
-
-  .jour-bloc{border-top:1px solid var(--border);}
-  .jour-bloc-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px 8px 24px;background:var(--card);font-size:12px;font-weight:600;color:var(--text2);}
-  .jour-bloc-h{font-weight:800;color:var(--text);}
-  .detail-line{display:flex;gap:10px;padding:7px 16px 7px 32px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);}
-  .detail-type{flex:1;}
-  .detail-h{font-weight:700;color:var(--accent);white-space:nowrap;}
-
-  /* GESTION */
-  .ag-item{display:flex;align-items:center;gap:10px;background:var(--input-bg);border-radius:12px;padding:10px 13px;margin-bottom:5px;}
-  .ag-code{color:var(--accent);font-size:11px;font-weight:700;letter-spacing:0.06em;flex-shrink:0;min-width:60px;}
-  .ag-lib{flex:1;font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .toggle-wrap{display:flex;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;}
-  .toggle-track{width:36px;height:20px;background:var(--border);border-radius:50px;position:relative;transition:background 0.2s;}
-  .toggle-track.on{background:var(--success);}
-  .toggle-thumb{width:14px;height:14px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:left 0.2s;}
-  .toggle-track.on .toggle-thumb{left:19px;}
-  .toggle-lbl{font-size:11px;font-weight:700;color:var(--text3);min-width:40px;}
-
-  .list-simple{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;max-height:180px;overflow-y:auto;}
-  .list-simple-item{background:var(--input-bg);border-radius:10px;padding:8px 12px;font-size:13px;font-weight:500;}
-  .add-row{display:flex;gap:8px;}.add-row input{flex:1;}
-  .btn-add{width:44px;height:44px;background:var(--accent);border:none;border-radius:12px;color:white;font-size:22px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(108,123,255,0.3);transition:all 0.2s;}
-  .btn-add:hover{transform:translateY(-1px);}
-
-  .btn-print{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:50px;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;padding:8px 16px;cursor:pointer;margin-bottom:12px;transition:all 0.15s;}
-  .btn-print:hover{border-color:var(--accent);color:var(--accent);}
-
-  .empty-state{text-align:center;padding:40px 20px;}
-  .empty-icon{font-size:32px;margin-bottom:10px;}
-  .empty-text{font-size:14px;font-weight:600;color:var(--text3);}
-
-  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--card);color:var(--text);border:1px solid var(--border);padding:11px 20px;border-radius:50px;font-weight:700;font-size:13px;opacity:0;transition:opacity 0.25s,transform 0.25s;z-index:50;white-space:nowrap;pointer-events:none;box-shadow:var(--shadow);}
-  .toast.success{background:var(--success);color:white;border-color:transparent;}
-  .toast.error{background:var(--red);color:white;border-color:transparent;}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-  @media print{.header,.tabs-wrap,.card,.btn-print{display:none!important;}body{background:white;}.nom-detail{display:block!important;}}
+  .tag-jour { background: #eee !important; color: #333 !important; border-radius: 2pt !important; }
+  .h-num { color: black !important; }
+  .dimanche { color: #aaa !important; }
+}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-left">
-    <span class="header-eyebrow">Feuilles de Temps</span>
-    <span class="header-title">Rapports</span>
+<div class="conn-bar" id="conn-bar"></div>
+
+<!-- PIN -->
+<div class="pin-screen" id="pin-screen">
+  <div class="pin-logo">📊</div>
+  <div class="pin-title">Rapports</div>
+  <div class="pin-sub">Accès responsable<br>Entrez votre code PIN</div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
   </div>
-  <button class="btn-theme" onclick="toggleTheme()" id="btn-theme">🌙</button>
+  <div class="pin-pad">
+    <button class="pin-btn" onclick="pinPress('1')">1</button>
+    <button class="pin-btn" onclick="pinPress('2')">2</button>
+    <button class="pin-btn" onclick="pinPress('3')">3</button>
+    <button class="pin-btn" onclick="pinPress('4')">4</button>
+    <button class="pin-btn" onclick="pinPress('5')">5</button>
+    <button class="pin-btn" onclick="pinPress('6')">6</button>
+    <button class="pin-btn" onclick="pinPress('7')">7</button>
+    <button class="pin-btn" onclick="pinPress('8')">8</button>
+    <button class="pin-btn" onclick="pinPress('9')">9</button>
+    <button class="pin-btn empty"></button>
+    <button class="pin-btn" onclick="pinPress('0')">0</button>
+    <button class="pin-btn del" onclick="pinDel()">⌫</button>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
 </div>
 
-<div class="tabs-wrap">
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('paie')">💶 Paie</button>
-    <button class="tab" onclick="switchTab('affaires')">🏗️ Affaire</button>
-    <button class="tab" onclick="switchTab('gestion')">⚙️ Gestion</button>
-  </div>
-</div>
+<div class="app">
 
-<div class="container">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-mark">📊</div>
+        <span class="logo-text">Rapports</span>
+      </div>
+      <div class="logo-sub">Feuilles de Temps</div>
+    </div>
 
-  <!-- PAIE -->
-  <div class="panel active" id="panel-paie">
-    <div class="card">
-      <div class="card-header"><div class="card-icon">📅</div><span class="card-title">Plage de semaines</span></div>
-      <div class="card-body">
-        <div class="filters-row">
-          <div><label>De la semaine</label><select id="sem-debut"></select></div>
-          <div><label>À la semaine</label><select id="sem-fin"></select></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Navigation</div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" onclick="switchTab('paie')" id="tab-paie">
+          <span class="tab-icon">💶</span> Heures / Paie
+        </button>
+        <button class="nav-tab" onclick="switchTab('affaires')" id="tab-affaires">
+          <span class="tab-icon">🏗️</span> Suivi Affaire
+        </button>
+        <button class="nav-tab" onclick="switchTab('gestion')" id="tab-gestion">
+          <span class="tab-icon">⚙️</span> Gestion
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtres PAIE -->
+    <div class="sidebar-section" id="filtres-paie">
+      <div class="sidebar-label">Filtres</div>
+      <div class="field">
+        <span class="field-label">Nom</span>
+        <select id="filtre-ouvrier">
+          <option value="">— Tous —</option>
+        </select>
+      </div>
+      <div class="field">
+        <span class="field-label">Du</span>
+        <input type="date" id="date-debut">
+      </div>
+      <div class="field">
+        <span class="field-label">Au</span>
+        <input type="date" id="date-fin">
+      </div>
+      <button class="btn-generer" id="btn-paie" onclick="genererPaie()">Générer</button>
+    </div>
+
+    <!-- Filtre AFFAIRES -->
+    <div class="sidebar-section" id="filtres-affaires" style="display:none">
+      <div class="sidebar-label">Affaire</div>
+      <div class="field">
+        <select id="select-affaire" onchange="genererSuiviAffaire()">
+          <option value="">— Choisir —</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="btn-sm" onclick="deconnecter()">🔒 Déco.</button>
+      <button class="btn-sm" onclick="toggleTheme()" id="btn-theme">🌙 Thème</button>
+      <button class="btn-sm print" onclick="window.print()">🖨 Imprimer</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- PAIE -->
+    <div class="panel active" id="panel-paie">
+      <div class="empty-state" id="paie-empty">
+        <div class="empty-icon">💶</div>
+        <div class="empty-text">Choisissez un nom et une plage de dates,<br>puis cliquez sur Générer</div>
+      </div>
+      <div id="paie-content" style="display:none"></div>
+    </div>
+
+    <!-- SUIVI AFFAIRE -->
+    <div class="panel" id="panel-affaires">
+      <div class="empty-state" id="aff-empty">
+        <div class="empty-icon">🏗️</div>
+        <div class="empty-text">Choisissez une affaire dans le panneau gauche</div>
+      </div>
+      <div id="aff-content" style="display:none"></div>
+    </div>
+
+    <!-- GESTION -->
+    <div class="panel" id="panel-gestion">
+      <div class="gestion-grid">
+        <div class="gestion-card">
+          <div class="gestion-card-title">🏗️ Ajouter une affaire</div>
+          <div class="field"><span class="field-label">Code</span><input type="text" id="new-affaire-code" placeholder="Ex: VA710"></div>
+          <div class="field"><span class="field-label">Libellé</span><input type="text" id="new-affaire-lib" placeholder="Nom du chantier"></div>
+          <button class="btn-generer" onclick="addAffaire()" style="margin-top:10px">Ajouter l'affaire</button>
         </div>
-        <button class="btn-generer" id="btn-paie" onclick="genererPaie()">Générer le rapport</button>
-      </div>
-    </div>
-    <div id="resultats-paie"><div class="empty-state"><div class="empty-icon">💶</div><div class="empty-text">Choisissez une plage de semaines</div></div></div>
-  </div>
-
-  <!-- SUIVI AFFAIRE -->
-  <div class="panel" id="panel-affaires">
-    <div class="card">
-      <div class="card-header"><div class="card-icon" style="background:var(--orangebg)">🏗️</div><span class="card-title">Sélectionner une affaire</span></div>
-      <div class="card-body">
-        <select id="select-affaire" onchange="genererSuiviAffaire()"><option value="">— Choisir une affaire —</option></select>
-      </div>
-    </div>
-    <div id="resultats-affaires"><div class="empty-state"><div class="empty-icon">🏗️</div><div class="empty-text">Choisissez une affaire</div></div></div>
-  </div>
-
-  <!-- GESTION -->
-  <div class="panel" id="panel-gestion">
-    <div class="card">
-      <div class="card-header"><div class="card-icon">➕</div><span class="card-title">Ajouter une affaire</span></div>
-      <div class="card-body">
-        <div class="add-row">
-          <input type="text" id="new-affaire-code" placeholder="Code" style="max-width:100px">
-          <input type="text" id="new-affaire-lib" placeholder="Libellé">
-          <button class="btn-add" onclick="addAffaire()">+</button>
+        <div class="gestion-card">
+          <div class="gestion-card-title">🔧 Types de travaux</div>
+          <div class="list-items" id="list-types"></div>
+          <div class="add-row"><input type="text" id="new-type" placeholder="Ex: Montage"><button class="btn-add" onclick="addType()">+</button></div>
+        </div>
+        <div class="gestion-card">
+          <div class="gestion-card-title">👷 Noms</div>
+          <div class="list-items" id="list-ouvriers"></div>
+          <div class="add-row"><input type="text" id="new-ouvrier" placeholder="Prénom Nom"><button class="btn-add" onclick="addOuvrier()">+</button></div>
+        </div>
+        <div class="gestion-card" style="grid-column:1/-1">
+          <div class="gestion-card-title">🔄 Statut des affaires</div>
+          <div id="gestion-affaires-list"></div>
         </div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-header"><div class="card-icon">🔧</div><span class="card-title">Types de travaux</span></div>
-      <div class="card-body">
-        <div class="list-simple" id="list-types"></div>
-        <div class="add-row"><input type="text" id="new-type" placeholder="Ex: Carrelage"><button class="btn-add" onclick="addType()">+</button></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div class="card-icon">👷</div><span class="card-title">Noms</span></div>
-      <div class="card-body">
-        <div class="list-simple" id="list-ouvriers"></div>
-        <div class="add-row"><input type="text" id="new-ouvrier" placeholder="Prénom Nom"><button class="btn-add" onclick="addOuvrier()">+</button></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div class="card-icon">🔄</div><span class="card-title">Statut des affaires</span></div>
-      <div class="card-body" id="gestion-affaires-list"></div>
-    </div>
-  </div>
 
+  </main>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const API="https://script.google.com/macros/s/AKfycbwdh6MIOMSAIHpjNeB2gRWUOq-gb9RAHm25Dm5MlAASQ2gyaa7PhU5e-H0276VmiD6X/exec";
 let listes={ouvriers:[],affaires:[],types:[],saisies:[]};
 
-function ft(url,ms=15000){return Promise.race([fetch(url),new Promise((_,r)=>setTimeout(()=>r(new Error('t')),ms))]);}
-function enc(v){return encodeURIComponent(v||'');}
-function fmtDate(str){return new Date(str+'T00:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});}
+// ── UTILS ─────────────────────────────────────────────────────
+function parseH(v){return parseFloat(String(v).replace(',','.'))||0;}
+function fmtH(v){const n=parseH(v);return n%1===0?n.toString():n.toFixed(1).replace('.',',');}
+function enc(v){return encodeURIComponent(String(v||''));}
+function fmtDate(s){return new Date(s+'T00:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function fmtDateLong(s){return new Date(s+'T00:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
 function ds(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function getLundi(o){const t=new Date(),dow=t.getDay()||7,l=new Date(t);l.setDate(t.getDate()-dow+1+o*7);l.setHours(0,0,0,0);return l;}
 function numSem(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));t.setUTCDate(t.getUTCDate()+4-(t.getUTCDay()||7));return Math.ceil((((t-new Date(Date.UTC(t.getUTCFullYear(),0,1)))/86400000)+1)/7);}
-function getLundiDeSemaine(dateStr){const d=new Date(dateStr+'T00:00:00'),dow=d.getDay()||7;d.setDate(d.getDate()-dow+1);return ds(d);}
-function getSemaineLabel(dateStr){const d=new Date(dateStr+'T00:00:00');return`S${String(numSem(d)).padStart(2,'0')} — ${d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})} ${d.getFullYear()}`;}
+function getLundiDeSemaine(s){const d=new Date(s+'T00:00:00'),dow=d.getDay()||7;d.setDate(d.getDate()-dow+1);return ds(d);}
+function getSemaineLabel(s){const d=new Date(s+'T00:00:00');return`S${String(numSem(d)).padStart(2,'0')} — ${d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})} ${d.getFullYear()}`;}
 
-function toggleTheme(){
-  const html=document.documentElement,isDark=html.getAttribute('data-theme')==='dark';
-  html.setAttribute('data-theme',isDark?'light':'dark');
-  document.getElementById('btn-theme').textContent=isDark?'🌙':'☀️';
-  localStorage.setItem('theme',isDark?'light':'dark');
+const JOURS_COURT=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+const JOURS_LONG=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+
+async function ftRetry(url,maxTry=3,baseDelay=2000){
+  for(let i=0;i<maxTry;i++){
+    try{
+      setConnBar('loading');
+      const r=await Promise.race([fetch(url),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),20000))]);
+      setConnBar('ok');return r;
+    }catch(e){
+      if(i===maxTry-1){setConnBar('error');throw e;}
+      await new Promise(r=>setTimeout(r,baseDelay*(i+1)));
+    }
+  }
 }
-(function(){const saved=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',saved);document.getElementById('btn-theme').textContent=saved==='dark'?'🌙':'☀️';})();
+function setConnBar(s){const b=document.getElementById('conn-bar');b.className='conn-bar';if(s==='loading')b.classList.add('loading');else if(s==='error')b.classList.add('error');}
 
-async function chargerListes(){
-  try{const r=await ft(API+"?action=getListes");const d=await r.json();listes=d;remplirSelectAffaire();renderGestion();}
-  catch(e){showToast("Erreur de connexion","error");}
+// ── PIN ───────────────────────────────────────────────────────
+const PIN_RAPPORTS='0000';
+let pinBuffer='';
+function pinPress(d){if(pinBuffer.length>=4)return;pinBuffer+=d;updatePinDots();if(pinBuffer.length===4)setTimeout(()=>validatePin(),150);}
+function pinDel(){pinBuffer=pinBuffer.slice(0,-1);updatePinDots();document.getElementById('pin-error').textContent='';}
+function updatePinDots(){for(let i=0;i<4;i++){const d=document.getElementById('pd'+i);d.classList.toggle('filled',i<pinBuffer.length);d.classList.remove('error');}}
+function validatePin(){
+  if(pinBuffer===PIN_RAPPORTS){document.getElementById('pin-screen').classList.add('hidden');sessionStorage.setItem('rapport_auth','1');}
+  else{for(let i=0;i<4;i++){const d=document.getElementById('pd'+i);d.classList.remove('filled');d.classList.add('error');}
+    document.getElementById('pin-error').textContent='Code incorrect';pinBuffer='';
+    setTimeout(()=>{for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.remove('error');},600);}
 }
+function deconnecter(){if(!confirm('Se déconnecter ?'))return;sessionStorage.removeItem('rapport_auth');pinBuffer='';updatePinDots();document.getElementById('pin-error').textContent='';document.getElementById('pin-screen').classList.remove('hidden');}
+(function(){if(sessionStorage.getItem('rapport_auth')==='1')document.getElementById('pin-screen').classList.add('hidden');})();
 
-function initSemaineSelects(){
-  const opts=[];
-  for(let i=-51;i<=4;i++){const l=getLundi(i);opts.push({val:ds(l),label:`S${String(numSem(l)).padStart(2,'0')} — ${l.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})} ${l.getFullYear()}`});}
-  ['sem-debut','sem-fin'].forEach(id=>{
-    const sel=document.getElementById(id);
-    sel.innerHTML=opts.map(o=>`<option value="${o.val}">${o.label}</option>`).join('');
-  });
-  document.getElementById('sem-debut').value=opts[Math.max(0,opts.length-5)].val;
-  document.getElementById('sem-fin').value=opts[opts.length-2].val;
-}
+// ── THEME ─────────────────────────────────────────────────────
+function toggleTheme(){const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Thème':'☀️ Thème';localStorage.setItem('ft_theme',d?'light':'dark');}
+(function(){const s=localStorage.getItem('ft_theme')||'dark';document.documentElement.setAttribute('data-theme',s);document.getElementById('btn-theme').textContent=s==='dark'?'🌙 Thème':'☀️ Thème';})();
 
+// ── TABS ─────────────────────────────────────────────────────
 function switchTab(tab){
-  const tabs=['paie','affaires','gestion'];
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
-  tabs.forEach(p=>document.getElementById(`panel-${p}`).classList.toggle('active',p===tab));
+  ['paie','affaires','gestion'].forEach(t=>{
+    document.getElementById(`panel-${t}`).classList.toggle('active',t===tab);
+    document.getElementById(`tab-${t}`).classList.toggle('active',t===tab);
+  });
+  document.getElementById('filtres-paie').style.display=tab==='paie'?'':'none';
+  document.getElementById('filtres-affaires').style.display=tab==='affaires'?'':'none';
   if(tab==='gestion')renderGestion();
 }
 
+// ── INIT DATES ────────────────────────────────────────────────
+(function(){
+  const today=new Date();
+  const debut=new Date(today.getFullYear(),today.getMonth(),1);
+  document.getElementById('date-debut').value=ds(debut);
+  document.getElementById('date-fin').value=ds(today);
+})();
+
+// ── PAIE ──────────────────────────────────────────────────────
 async function genererPaie(){
-  const debut=document.getElementById('sem-debut').value,fin=document.getElementById('sem-fin').value;
-  if(!debut||!fin){showToast("Choisissez une plage","error");return;}
-  const dFin=new Date(fin+'T00:00:00');dFin.setDate(dFin.getDate()+5);
-  const btn=document.getElementById('btn-paie');btn.textContent='Chargement...';btn.disabled=true;
-  try{const r=await ft(API+"?action=getListes");const d=await r.json();listes=d;afficherPaie(debut,ds(dFin));}
-  catch(e){showToast("Erreur de connexion","error");}
-  btn.textContent='Générer le rapport';btn.disabled=false;
+  const ouvrier=document.getElementById('filtre-ouvrier').value;
+  const debut=document.getElementById('date-debut').value;
+  const fin=document.getElementById('date-fin').value;
+  if(!debut||!fin){showToast("Choisissez une plage de dates","error");return;}
+
+  const btn=document.getElementById('btn-paie');
+  btn.textContent='Chargement...';btn.disabled=true;
+  try{
+    const r=await ftRetry(API+"?action=getListes");
+    const d=await r.json();listes=d;
+    afficherPaie(ouvrier,debut,fin);
+  }catch(e){showToast("Erreur de connexion","error");}
+  btn.textContent='Générer';btn.disabled=false;
 }
 
-function afficherPaie(debut,fin){
-  const div=document.getElementById('resultats-paie');
+function afficherPaie(ouvrier,debut,fin){
   const dDebut=new Date(debut+'T00:00:00'),dFin=new Date(fin+'T23:59:59');
-  const saisies=listes.saisies.slice(1).filter(row=>{if(!row[0])return false;const d=new Date(row[0]+'T00:00:00');return d>=dDebut&&d<=dFin;});
-  if(!saisies.length){div.innerHTML=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">Aucune saisie pour cette période</div></div>`;return;}
-  const parNom={};
-  saisies.forEach(row=>{const nom=row[1];if(!parNom[nom])parNom[nom]={heures:0,lignes:[]};parNom[nom].heures+=parseFloat(row[5])||0;parNom[nom].lignes.push(row);});
-  const totalH=Object.values(parNom).reduce((a,b)=>a+b.heures,0);
-  const JOURS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
 
-  let html=`<button class="btn-print" onclick="window.print()">🖨 Imprimer / PDF</button>
-  <div class="stats-row">
-    <div class="stat-box"><div class="stat-val">${totalH.toFixed(1)}<span class="unit">h</span></div><div class="stat-lbl">Total</div></div>
-    <div class="stat-box"><div class="stat-val">${Object.keys(parNom).length}</div><div class="stat-lbl">Personnes</div></div>
-  </div>
-  <div class="card" style="margin-bottom:12px">
-    <div class="card-header"><div class="card-icon">📊</div><span class="card-title">Récapitulatif</span></div>
-    <div class="card-body" style="padding:0">
-    <div class="table-wrap" style="border:none;border-radius:0"><table>
-      <thead><tr><th>Nom</th><th>Heures</th></tr></thead>
-      <tbody>${Object.entries(parNom).map(([nom,data])=>`<tr><td><span class="tag tag-nom">${nom}</span></td><td><span class="h-val">${data.heures.toFixed(1)} h</span></td></tr>`).join('')}</tbody>
-    </table></div></div>
-  </div>`;
-
-  Object.entries(parNom).forEach(([nom,data],ni)=>{
-    const parSemaine={};
-    data.lignes.forEach(row=>{const l=getLundiDeSemaine(row[0]);if(!parSemaine[l])parSemaine[l]={heures:0,parJour:{}};parSemaine[l].heures+=parseFloat(row[5])||0;if(!parSemaine[l].parJour[row[0]])parSemaine[l].parJour[row[0]]=[];parSemaine[l].parJour[row[0]].push(row);});
-    html+=`<div class="nom-block">
-      <div class="nom-header" onclick="toggleNom(${ni},this)">
-        <span class="nom-label">${nom}</span>
-        <span class="nom-total">${data.heures.toFixed(1)} h</span>
-      </div>
-      <div class="nom-detail" id="np-${ni}">`;
-    Object.entries(parSemaine).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([lundi,semData])=>{
-      html+=`<div class="semaine-bloc"><div class="semaine-header"><span>${getSemaineLabel(lundi)}</span><span>${semData.heures.toFixed(1)} h</span></div>`;
-      Object.entries(semData.parJour).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([date,lignes])=>{
-        const d=new Date(date+'T00:00:00'),nomJour=JOURS[d.getDay()-1]||'';
-        const tj=lignes.reduce((a,r)=>a+(parseFloat(r[5])||0),0);
-        html+=`<div class="jour-bloc"><div class="jour-bloc-header"><span>${nomJour} ${fmtDate(date)}</span><span class="jour-bloc-h">${tj.toFixed(1)} h</span></div>`;
-        lignes.forEach(row=>{html+=`<div class="detail-line"><span class="detail-type">${row[2]}${row[3]?' — '+row[3]:''} · ${row[4]}</span><span class="detail-h">${parseFloat(row[5]).toFixed(1)} h</span></div>`;});
-        html+=`</div>`;
-      });
-      html+=`</div>`;
-    });
-    html+=`</div></div>`;
+  // Filtrer saisies
+  let saisies=listes.saisies.slice(1).filter(row=>{
+    if(!row[0])return false;
+    const d=new Date(row[0]+'T00:00:00');
+    return d>=dDebut&&d<=dFin;
   });
-  div.innerHTML=html;
+  if(ouvrier)saisies=saisies.filter(r=>r[1]===ouvrier);
+
+  document.getElementById('paie-empty').style.display='none';
+  const content=document.getElementById('paie-content');
+  content.style.display='block';
+
+  if(!saisies.length){
+    content.innerHTML=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">Aucune saisie pour la période sélectionnée</div></div>`;
+    return;
+  }
+
+  // Si tous les ouvriers : faire un rapport par ouvrier
+  const nomsUniques=ouvrier?[ouvrier]:[...new Set(saisies.map(r=>r[1]))].sort();
+
+  let html='';
+  nomsUniques.forEach((nom,nomIdx)=>{
+    const saisiesNom=saisies.filter(r=>r[1]===nom);
+    html+=buildRapportNom(nom,saisiesNom,debut,fin,nomIdx>0);
+  });
+  content.innerHTML=html;
 }
 
-function toggleNom(i,header){document.getElementById(`np-${i}`)?.classList.toggle('open');header.classList.toggle('open');}
+function buildRapportNom(nom,saisies,debut,fin,pageBreak){
+  const totalPeriode=saisies.reduce((a,r)=>a+parseH(r[5]),0);
+  const nbJours=new Set(saisies.map(r=>r[0])).size;
 
+  // Grouper par jour
+  const parJour={};
+  saisies.forEach(row=>{
+    if(!parJour[row[0]])parJour[row[0]]=0;
+    parJour[row[0]]+=parseH(row[5]);
+  });
+
+  // Grouper les jours par semaine
+  const parSemaine={};
+  Object.entries(parJour).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([date,h])=>{
+    const l=getLundiDeSemaine(date);
+    if(!parSemaine[l])parSemaine[l]=[];
+    parSemaine[l].push({date,h});
+  });
+
+  const periodeStr=`${fmtDate(debut)} — ${fmtDate(fin)}`;
+
+  let html=`${pageBreak?'<div style="page-break-before:always;height:24px"></div>':''}
+  <div class="rapport-header">
+    <div class="rapport-titre">${nom}</div>
+    <div class="rapport-sous-titre">Rapport de présence · ${periodeStr}</div>
+  </div>
+  <div class="resume-bande">
+    <div class="resume-box accent-box">
+      <div class="resume-val">${fmtH(totalPeriode)}<span class="u">h</span></div>
+      <div class="resume-lbl">Total période</div>
+    </div>
+    <div class="resume-box">
+      <div class="resume-val">${nbJours}</div>
+      <div class="resume-lbl">Jours travaillés</div>
+    </div>
+    <div class="resume-box">
+      <div class="resume-val">${Object.keys(parSemaine).length}</div>
+      <div class="resume-lbl">Semaines</div>
+    </div>
+  </div>
+  <div class="rapport-table-wrap">
+    <div class="rapport-table-titre">
+      <span class="rapport-table-titre-text">Détail par jour</span>
+      <span class="rapport-table-titre-total">${fmtH(totalPeriode)} h</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Jour</th>
+          <th>Date</th>
+          <th class="right">Heures</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  Object.entries(parSemaine).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([lundi,jours])=>{
+    const totalSem=jours.reduce((a,j)=>a+j.h,0);
+    html+=`<tr class="sep-semaine">
+      <td colspan="2">${getSemaineLabel(lundi)}</td>
+      <td class="total-sem right">${fmtH(totalSem)} h</td>
+    </tr>`;
+    jours.forEach(({date,h})=>{
+      const d=new Date(date+'T00:00:00');
+      const nomJour=JOURS_LONG[d.getDay()];
+      const estDim=d.getDay()===0;
+      html+=`<tr class="jour-row">
+        <td><span class="tag-jour ${estDim?'dimanche':''}">${JOURS_COURT[d.getDay()]}</span></td>
+        <td class="${estDim?'dimanche':''}">${d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}</td>
+        <td class="right h-num">${fmtH(h)} h</td>
+      </tr>`;
+    });
+  });
+
+  html+=`<tr class="total-periode">
+    <td colspan="2">Total période — ${periodeStr}</td>
+    <td class="right">${fmtH(totalPeriode)} h</td>
+  </tr>
+  </tbody></table></div></div>`;
+
+  return html;
+}
+
+// ── SUIVI AFFAIRE ─────────────────────────────────────────────
 function remplirSelectAffaire(){
   const sel=document.getElementById('select-affaire'),val=sel.value;
-  sel.innerHTML='<option value="">— Choisir une affaire —</option>';
-  listes.affaires.slice(1).forEach(a=>sel.innerHTML+=`<option value="${a[0]}">${a[0]}${a[1]?' — '+a[1]:''}${(a[2]||'Actif')==='Inactif'?' (terminée)':''}</option>`);
+  sel.innerHTML='<option value="">— Choisir —</option>';
+  listes.affaires.slice(1).forEach(a=>sel.innerHTML+=`<option value="${a[0]}">${a[0]}${a[1]?' — '+a[1]:''}${(a[2]||'Actif')==='Inactif'?' ✓':''}</option>`);
   if(val)sel.value=val;
 }
 
 function genererSuiviAffaire(){
   const code=document.getElementById('select-affaire').value;
-  const div=document.getElementById('resultats-affaires');
-  if(!code){div.innerHTML='<div class="empty-state"><div class="empty-icon">🏗️</div><div class="empty-text">Choisissez une affaire</div></div>';return;}
-  const saisies=listes.saisies.slice(1).filter(row=>row[2]===code);
-  const affaire=listes.affaires.slice(1).find(a=>a[0]===code);
-  const lib=affaire?affaire[1]:'';const statut=affaire?(affaire[2]||'Actif'):'';
-  if(!saisies.length){div.innerHTML=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">Aucune saisie pour ${code}</div></div>`;return;}
-  const totalH=saisies.reduce((a,r)=>a+(parseFloat(r[5])||0),0);
-  const noms=new Set(saisies.map(r=>r[1]));
-  const dateMin=saisies.map(r=>r[0]).sort()[0];
-  const dateMax=saisies.map(r=>r[0]).sort().reverse()[0];
-  const parNom={};
-  saisies.forEach(row=>{const nom=row[1];if(!parNom[nom])parNom[nom]={heures:0,lignes:[]};parNom[nom].heures+=parseFloat(row[5])||0;parNom[nom].lignes.push(row);});
+  const empty=document.getElementById('aff-empty');
+  const content=document.getElementById('aff-content');
+  if(!code){empty.style.display='';content.style.display='none';return;}
 
-  let html=`<button class="btn-print" onclick="window.print()">🖨 Imprimer / PDF</button>
-  <div class="affaire-hero">
-    <div class="affaire-hero-code">${code}${statut==='Inactif'?' · TERMINÉE':''}</div>
-    <div class="affaire-hero-lib">${lib||'—'}</div>
-    <div class="affaire-hero-periode">${fmtDate(dateMin)} → ${fmtDate(dateMax)}</div>
-    <div class="affaire-hero-total">${totalH.toFixed(1)}<span>h</span></div>
+  const saisies=listes.saisies.slice(1).filter(r=>r[2]===code);
+  const affaire=listes.affaires.slice(1).find(a=>a[0]===code);
+  const lib=affaire?affaire[1]:'',statut=affaire?(affaire[2]||'Actif'):'';
+
+  empty.style.display='none';content.style.display='block';
+
+  if(!saisies.length){content.innerHTML=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">Aucune saisie pour cette affaire</div></div>`;return;}
+
+  const totalH=saisies.reduce((a,r)=>a+parseH(r[5]),0);
+  const noms=new Set(saisies.map(r=>r[1]));
+  const dateMin=saisies.map(r=>r[0]).sort()[0],dateMax=saisies.map(r=>r[0]).sort().reverse()[0];
+  const parNom={};
+  saisies.forEach(r=>{if(!parNom[r[1]])parNom[r[1]]={h:0,lignes:[]};parNom[r[1]].h+=parseH(r[5]);parNom[r[1]].lignes.push(r);});
+
+  let html=`
+  <div class="rapport-header">
+    <div class="rapport-titre">${code}${lib?' — '+lib:''}</div>
+    <div class="rapport-sous-titre">${statut==='Inactif'?'Affaire terminée · ':''} ${fmtDate(dateMin)} — ${fmtDate(dateMax)}</div>
   </div>
-  <div class="stats-row">
-    <div class="stat-box"><div class="stat-val">${totalH.toFixed(1)}<span class="unit">h</span></div><div class="stat-lbl">Total</div></div>
-    <div class="stat-box"><div class="stat-val">${noms.size}</div><div class="stat-lbl">Personnes</div></div>
-    <div class="stat-box"><div class="stat-val">${saisies.length}</div><div class="stat-lbl">Saisies</div></div>
+  <div class="resume-bande">
+    <div class="resume-box accent-box"><div class="resume-val">${fmtH(totalH)}<span class="u">h</span></div><div class="resume-lbl">Total heures</div></div>
+    <div class="resume-box"><div class="resume-val">${noms.size}</div><div class="resume-lbl">Personnes</div></div>
+    <div class="resume-box"><div class="resume-val">${saisies.length}</div><div class="resume-lbl">Saisies</div></div>
   </div>
-  <div class="card" style="margin-bottom:12px">
-    <div class="card-header"><div class="card-icon">📊</div><span class="card-title">Heures par personne</span></div>
-    <div class="card-body" style="padding:0">
-    <div class="table-wrap" style="border:none;border-radius:0"><table>
-      <thead><tr><th>Nom</th><th>Heures</th><th>%</th></tr></thead>
-      <tbody>${Object.entries(parNom).sort((a,b)=>b[1].heures-a[1].heures).map(([nom,data])=>`<tr><td><span class="tag tag-nom">${nom}</span></td><td><span class="h-val">${data.heures.toFixed(1)} h</span></td><td style="color:var(--text3);font-weight:600">${Math.round(data.heures/totalH*100)} %</td></tr>`).join('')}</tbody>
-    </table></div></div>
+  <div class="rapport-table-wrap">
+    <div class="rapport-table-titre"><span class="rapport-table-titre-text">Heures par personne</span><span class="rapport-table-titre-total">${fmtH(totalH)} h</span></div>
+    <table><thead><tr><th>Nom</th><th class="right">Heures</th><th class="right">%</th></tr></thead><tbody>
+    ${Object.entries(parNom).sort((a,b)=>b[1].h-a[1].h).map(([nom,d])=>`<tr class="jour-row"><td>${nom}</td><td class="right h-num">${fmtH(d.h)} h</td><td class="right" style="color:var(--text3)">${Math.round(d.h/totalH*100)} %</td></tr>`).join('')}
+    </tbody></table>
   </div>`;
 
-  Object.entries(parNom).sort((a,b)=>b[1].heures-a[1].heures).forEach(([nom,data],i)=>{
-    const lignes=data.lignes.sort((a,b)=>new Date(a[0])-new Date(b[0]));
-    html+=`<div class="nom-block">
-      <div class="nom-header" onclick="toggleNomAff(${i},this)">
-        <span class="nom-label">${nom}</span>
-        <span class="nom-total">${data.heures.toFixed(1)} h</span>
-      </div>
-      <div class="nom-detail" id="na-${i}">
-        ${lignes.map(row=>`<div class="detail-line"><span class="detail-type">${fmtDate(row[0])} · ${row[4]}</span><span class="detail-h">${parseFloat(row[5]).toFixed(1)} h</span></div>`).join('')}
-      </div>
+  Object.entries(parNom).sort((a,b)=>b[1].h-a[1].h).forEach(([nom,data])=>{
+    const lignes=data.lignes.sort((a,b)=>a[0].localeCompare(b[0]));
+    html+=`<div class="rapport-table-wrap" style="margin-bottom:16px">
+      <div class="rapport-table-titre"><span class="rapport-table-titre-text">${nom}</span><span class="rapport-table-titre-total">${fmtH(data.h)} h</span></div>
+      <table><thead><tr><th>Date</th><th>Type</th><th class="right">Heures</th></tr></thead><tbody>
+      ${lignes.map(r=>{const d=new Date(r[0]+'T00:00:00');return`<tr class="jour-row"><td>${d.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})}</td><td style="color:var(--text2)">${r[4]}</td><td class="right h-num">${fmtH(r[5])} h</td></tr>`;}).join('')}
+      </tbody></table>
     </div>`;
   });
-  div.innerHTML=html;
+  content.innerHTML=html;
 }
 
-function toggleNomAff(i,header){document.getElementById(`na-${i}`)?.classList.toggle('open');header.classList.toggle('open');}
-
+// ── GESTION ───────────────────────────────────────────────────
 function renderGestion(){
   const list=document.getElementById('gestion-affaires-list');if(!list)return;
   list.innerHTML=listes.affaires.slice(1).slice().reverse().map(a=>{
@@ -399,36 +652,52 @@ function renderGestion(){
         <span class="toggle-lbl">${actif?'Actif':'Inactif'}</span>
       </div></div>`;
   }).join('');
-  document.getElementById('list-types').innerHTML=listes.types.slice(1).map(r=>`<div class="list-simple-item">${r[0]}</div>`).join('');
-  document.getElementById('list-ouvriers').innerHTML=listes.ouvriers.slice(1).map(r=>`<div class="list-simple-item">${r[1]}</div>`).join('');
+  document.getElementById('list-types').innerHTML=listes.types.slice(1).map(r=>`<div class="list-item">${r[0]}</div>`).join('');
+  document.getElementById('list-ouvriers').innerHTML=listes.ouvriers.slice(1).map(r=>`<div class="list-item">${r[1]}</div>`).join('');
 }
 
 async function toggleStatut(code,newStatut,el){
   try{
-    await ft(`${API}?action=updateStatutAffaire&code=${enc(code)}&statut=${enc(newStatut)}`);
+    await ftRetry(`${API}?action=updateStatutAffaire&code=${enc(code)}&statut=${enc(newStatut)}`);
     const actif=newStatut==='Actif';
     el.querySelector('.toggle-track').classList.toggle('on',actif);
     el.querySelector('.toggle-lbl').textContent=actif?'Actif':'Inactif';
-    const a=listes.affaires.find(a=>a[0]===code);if(a)a[2]=newStatut;
+    const a=listes.affaires.find(x=>x[0]===code);if(a)a[2]=newStatut;
     el.setAttribute('onclick',`toggleStatut('${code}','${actif?'Inactif':'Actif'}',this)`);
     remplirSelectAffaire();showToast(actif?'Activée ✓':'Désactivée','success');
   }catch(e){showToast("Erreur","error");}
 }
-
 async function addAffaire(){
   const code=document.getElementById('new-affaire-code').value.trim(),lib=document.getElementById('new-affaire-lib').value.trim();
   if(!code||!lib){showToast("Code et libellé requis","error");return;}
-  await ft(`${API}?action=addAffaire&code=${enc(code)}&libelle=${enc(lib)}`);
+  await ftRetry(`${API}?action=addAffaire&code=${enc(code)}&libelle=${enc(lib)}`);
   document.getElementById('new-affaire-code').value='';document.getElementById('new-affaire-lib').value='';
   await chargerListes();showToast("Affaire ajoutée","success");
 }
 async function addType(){
-  const type=document.getElementById('new-type').value.trim();if(!type){showToast("Requis","error");return;}
-  await ft(`${API}?action=addType&type=${enc(type)}`);document.getElementById('new-type').value='';await chargerListes();showToast("Ajouté","success");
+  const t=document.getElementById('new-type').value.trim();if(!t)return;
+  await ftRetry(`${API}?action=addType&type=${enc(t)}`);
+  document.getElementById('new-type').value='';await chargerListes();showToast("Ajouté","success");
 }
 async function addOuvrier(){
-  const nom=document.getElementById('new-ouvrier').value.trim();if(!nom){showToast("Requis","error");return;}
-  await ft(`${API}?action=addOuvrier&nom=${enc(nom)}`);document.getElementById('new-ouvrier').value='';await chargerListes();showToast("Ajouté","success");
+  const n=document.getElementById('new-ouvrier').value.trim();if(!n)return;
+  await ftRetry(`${API}?action=addOuvrier&nom=${enc(n)}`);
+  document.getElementById('new-ouvrier').value='';await chargerListes();showToast("Ajouté","success");
+}
+
+// ── CHARGEMENT ────────────────────────────────────────────────
+async function chargerListes(){
+  try{
+    const r=await ftRetry(API+"?action=getListes");
+    const d=await r.json();listes=d;
+    // Remplir select ouvrier
+    const sel=document.getElementById('filtre-ouvrier'),val=sel.value;
+    sel.innerHTML='<option value="">— Tous —</option>';
+    listes.ouvriers.slice(1).forEach(r=>sel.innerHTML+=`<option value="${r[1]}">${r[1]}</option>`);
+    if(val)sel.value=val;
+    remplirSelectAffaire();
+    renderGestion();
+  }catch(e){showToast("Erreur de connexion","error");}
 }
 
 function showToast(msg,type='success'){
@@ -436,7 +705,6 @@ function showToast(msg,type='success'){
   setTimeout(()=>t.classList.add('show'),10);setTimeout(()=>t.classList.remove('show'),2800);
 }
 
-initSemaineSelects();
 chargerListes();
 </script>
 </body>
